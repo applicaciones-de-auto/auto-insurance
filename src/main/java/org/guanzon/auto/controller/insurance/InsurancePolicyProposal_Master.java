@@ -19,6 +19,7 @@ import org.guanzon.appdriver.iface.GTransaction;
 import org.guanzon.auto.general.CancelForm;
 import org.guanzon.auto.general.SearchDialog;
 import org.guanzon.auto.model.insurance.Model_Insurance_Policy_Proposal;
+import org.guanzon.auto.model.sales.Model_VehicleSalesProposal_Master;
 import org.guanzon.auto.validator.insurance.ValidatorFactory;
 import org.guanzon.auto.validator.insurance.ValidatorInterface;
 import org.json.simple.JSONObject;
@@ -303,50 +304,47 @@ public class InsurancePolicyProposal_Master implements GTransaction{
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
-//    public JSONObject searchVSP(String fsValue, boolean fbByCode){
-//        JSONObject loJSON = new JSONObject(); 
-//        String lsID = "sVSPNOxxx";
-//        if(fbByCode){
-//            lsID = "sTransNox";
-//        }
-//        String lsHeader = "VSP No»Customer»CS No»Plate No";//VSP Date»
-//        String lsColName = lsID+"»sBuyCltNm»sCSNoxxxx»sPlateNox"; //"dTransact»"+
-//        String lsCriteria = "a."+lsID+"»b.sCompnyNm»p.sCSNoxxxx»q.sPlateNox"; //a.dTransact»
-//        String lsSQL = poVSPModel.getSQL();
-//        
-//        if(fbByCode){
-//            lsSQL = MiscUtil.addCondition(lsSQL,  " a.cTranStat <> " + SQLUtil.toSQL(TransactionStatus.STATE_CANCELLED)
-//                                                + " AND a.sTransNox = " + SQLUtil.toSQL(fsValue)
-//                                                + " AND (a.sTransNox IN (SELECT vsp_labor.sTransNox FROM vsp_labor WHERE vsp_labor.sTransNox = a.sTransNox ) " 
-//                                                + " OR a.sTransNox IN (SELECT vsp_parts.sTransNox FROM vsp_parts WHERE vsp_parts.sTransNox = a.sTransNox )) " 
-//                                                + " GROUP BY a.sTransNox ");
-//        
-//        } else {
-//            lsSQL = MiscUtil.addCondition(lsSQL,  " a.cTranStat <> " + SQLUtil.toSQL(TransactionStatus.STATE_CANCELLED)
-//                                                + " AND b.sCompnyNm LIKE " + SQLUtil.toSQL(fsValue + "%")
-//                                                + " AND (a.sTransNox IN (SELECT vsp_labor.sTransNox FROM vsp_labor WHERE vsp_labor.sTransNox = a.sTransNox ) " 
-//                                                + " OR a.sTransNox IN (SELECT vsp_parts.sTransNox FROM vsp_parts WHERE vsp_parts.sTransNox = a.sTransNox )) " 
-//                                                + " GROUP BY a.sTransNox ");
-//        
-//        }
-//        System.out.println("SEARCH VSP: " + lsSQL);
-//        loJSON = ShowDialogFX.Search(poGRider,
-//                lsSQL,
-//                fsValue,
-//                    lsHeader,
-//                    lsColName,
-//                    lsCriteria,
-//                    0);
-//
-//        if (loJSON != null) {
-//        } else {
-//            loJSON = new JSONObject();
-//            loJSON.put("result", "error");
-//            loJSON.put("message", "No record loaded.");
-//            return loJSON;
-//        }
-//        return loJSON;
-//    }
+    public JSONObject searchVSP(String fsValue, boolean fbByCode){
+        JSONObject loJSON = new JSONObject(); 
+        String lsID = "sVSPNOxxx";
+        if(fbByCode){
+            lsID = "sTransNox";
+        }
+        String lsHeader = "VSP No»Customer»CS No»Plate No";//VSP Date»
+        String lsColName = lsID+"»sBuyCltNm»sCSNoxxxx»sPlateNox"; //"dTransact»"+
+        String lsCriteria = "a."+lsID+"»b.sCompnyNm»p.sCSNoxxxx»q.sPlateNox"; //a.dTransact»
+        Model_VehicleSalesProposal_Master loEntity = new Model_VehicleSalesProposal_Master(poGRider);
+        String lsSQL = loEntity.getSQL();
+        
+        if(fbByCode){
+            lsSQL = MiscUtil.addCondition(lsSQL,  " a.cTranStat <> " + SQLUtil.toSQL(TransactionStatus.STATE_CANCELLED)
+                                                + " AND a.sTransNox = " + SQLUtil.toSQL(fsValue)
+                                                + " GROUP BY a.sTransNox ");
+        
+        } else {
+            lsSQL = MiscUtil.addCondition(lsSQL,  " a.cTranStat <> " + SQLUtil.toSQL(TransactionStatus.STATE_CANCELLED)
+                                                + " AND b.sCompnyNm LIKE " + SQLUtil.toSQL(fsValue + "%")
+                                                + " GROUP BY a.sTransNox ");
+        
+        }
+        System.out.println("SEARCH VSP: " + lsSQL);
+        loJSON = ShowDialogFX.Search(poGRider,
+                lsSQL,
+                fsValue,
+                    lsHeader,
+                    lsColName,
+                    lsCriteria,
+                    0);
+
+        if (loJSON != null) {
+        } else {
+            loJSON = new JSONObject();
+            loJSON.put("result", "error");
+            loJSON.put("message", "No record loaded.");
+            return loJSON;
+        }
+        return loJSON;
+    }
     
 //    /**
 //     * Search Service Advisor

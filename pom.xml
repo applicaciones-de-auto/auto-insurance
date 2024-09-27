@@ -47,5 +47,10 @@
             <version>0.1-SNAPSHOT</version>
             <type>jar</type>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>auto-sales-model</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 </project>

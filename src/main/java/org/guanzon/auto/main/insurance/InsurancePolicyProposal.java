@@ -210,8 +210,9 @@ public class InsurancePolicyProposal implements GTransaction{
     public JSONObject searchVSP(String fsValue, boolean fbByCode){
         JSONObject loJSON = new JSONObject();
         JSONObject loJSONDet = new JSONObject();
-//        loJSON = poController.searchVSP(fsValue,fbByCode);
+        loJSON = poController.searchVSP(fsValue,fbByCode);
         if(!"error".equals((String) loJSON.get("result"))){
+            poController.getMasterModel().setVSPTranNo((String) loJSON.get("sTransNox"));
             poController.getMasterModel().setVSPNo((String) loJSON.get("sVSPNOxxx"));
             poController.getMasterModel().setSerialID((String) loJSON.get("sSerialID"));
             poController.getMasterModel().setClientID((String) loJSON.get("sClientID"));
@@ -225,6 +226,7 @@ public class InsurancePolicyProposal implements GTransaction{
             poController.getMasterModel().setVhclFDsc((String) loJSON.get("sVhclFDsc"));
             
         } else {     
+            poController.getMasterModel().setVSPTranNo("");
             poController.getMasterModel().setVSPNo("");           
             poController.getMasterModel().setSerialID("");        
             poController.getMasterModel().setClientID("");        

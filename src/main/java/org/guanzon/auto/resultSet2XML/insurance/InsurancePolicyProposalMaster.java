@@ -9,6 +9,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import org.guanzon.appdriver.base.GRider;
 import org.guanzon.appdriver.base.MiscUtil;
+import org.guanzon.appdriver.base.SQLUtil;
+import org.guanzon.appdriver.constant.TransactionStatus;
 
 /**
  *
@@ -37,7 +39,7 @@ public class InsurancePolicyProposalMaster {
         System.setProperty("sys.default.path.metadata", "D:/GGC_Maven_Systems/config/metadata/Model_Insurance_Policy_Proposal.xml");
         
         
-        String lsSQL =    " SELECT "                                                                               
+        String lsSQL =    " SELECT "                                                                           
                         + "    a.sTransNox "                                                                   
                         + "  , a.dTransact "                                                                   
                         + "  , a.sReferNox "                                                                   
@@ -70,7 +72,14 @@ public class InsurancePolicyProposalMaster {
                         + "  , a.sModified "                                                                   
                         + "  , a.dModified "                                                                   
                         + "  , a.sApproved "                                                                   
-                        + "  , a.dApproved "                                                                   
+                        + "  , a.dApproved "  
+                        + "  , CASE "          
+                        + " 	WHEN a.cTranStat = "+SQLUtil.toSQL(TransactionStatus.STATE_CLOSED)+" THEN 'APPROVE' "                     
+                        + " 	WHEN a.cTranStat = "+SQLUtil.toSQL(TransactionStatus.STATE_CANCELLED)+" THEN 'CANCELLED' "                  
+                        + " 	WHEN a.cTranStat = "+SQLUtil.toSQL(TransactionStatus.STATE_OPEN)+" THEN 'ACTIVE' "                    
+                        + " 	WHEN a.cTranStat = "+SQLUtil.toSQL(TransactionStatus.STATE_POSTED)+" THEN 'POSTED' "                                      
+                        + " 	ELSE 'ACTIVE'  "                                                          
+                        + "    END AS sTranStat "
                         + "  , b.sCompnyNm AS sOwnrNmxx "                                                      
                         + "  , b.cClientTp "                                                                   
                         + "  , IFNULL(CONCAT( IFNULL(CONCAT(d.sHouseNox,' ') , ''), "                          
@@ -99,7 +108,7 @@ public class InsurancePolicyProposalMaster {
                         + " LEFT JOIN vehicle_master j ON j.sVhclIDxx = h.sVhclIDxx "                          
                         + " LEFT JOIN client_master k ON k.sClientID = h.sCoCltIDx " /*co-owner*/              
                         + " LEFT JOIN insurance_company_branches l ON l.sBrInsIDx = a.sBrInsIDx "              
-                        + " LEFT JOIN insurance_company m ON m.sInsurIDx = l.sInsurIDx "
+                        + " LEFT JOIN insurance_company m ON m.sInsurIDx = l.sInsurIDx " 
                         + " WHERE 0=1";
         
         
