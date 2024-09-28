@@ -1,8 +1,11 @@
 
 import java.math.BigDecimal;
 import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import org.guanzon.appdriver.base.GRider;
-import org.guanzon.auto.main.insurance.InsurancePolicyProposal;
+import org.guanzon.auto.main.insurance.InsurancePolicyApplication;
 import org.json.simple.JSONObject;
 import org.junit.AfterClass;
 import static org.junit.Assert.assertTrue;
@@ -23,12 +26,12 @@ import org.junit.runners.MethodSorters;
  * @author Arsiela
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class InsurancePolicyProposalTest {
-    static InsurancePolicyProposal model;
+public class InsurancePolicyApplicationTest {
+    static InsurancePolicyApplication model;
     JSONObject json;
     boolean result;
     static GRider instance;
-    public InsurancePolicyProposalTest(){}
+    public InsurancePolicyApplicationTest(){}
     
     @BeforeClass
     public static void setUpClass() {   
@@ -53,7 +56,7 @@ public class InsurancePolicyProposalTest {
         JSONObject json;
         
         System.out.println("sBranch code = " + instance.getBranchCode());
-        model = new InsurancePolicyProposal(instance,false, instance.getBranchCode());
+        model = new InsurancePolicyApplication(instance,false, instance.getBranchCode());
     }
     
     @AfterClass
@@ -68,159 +71,63 @@ public class InsurancePolicyProposalTest {
      */
 
 //    @Test
-//    public void test01NewRecord() throws SQLException{
+//    public void test01NewRecord() throws SQLException, ParseException{
 //        System.out.println("--------------------------------------------------------------------");
 //        System.out.println("------------------------------NEW RECORD--------------------------------------");
 //        System.out.println("--------------------------------------------------------------------");
 //        
 //        json = model.newTransaction();
 //        if ("success".equals((String) json.get("result"))){
+//            
+//            json = model.getMasterModel().getMasterModel().setReferNo("M00124000001");
+//            if ("error".equals((String) json.get("result"))){
+//                System.err.println((String) json.get("message"));
+//                System.exit(1);
+//            } 
+//            
+//            json = model.getMasterModel().getMasterModel().setFinType("0");
+//            if ("error".equals((String) json.get("result"))){
+//                System.err.println((String) json.get("message"));
+//                System.exit(1);
+//            }
+//            
+//            json = model.getMasterModel().getMasterModel().setBrBankID("M001BK240001");
+//            if ("error".equals((String) json.get("result"))){
+//                System.err.println((String) json.get("message"));
+//                System.exit(1);
+//            }
+//            
+//            json = model.getMasterModel().getMasterModel().setEmployID("A00118000001");
+//            if ("error".equals((String) json.get("result"))){
+//                System.err.println((String) json.get("message"));
+//                System.exit(1);
+//            }
 //
-//            json = model.getMasterModel().getMasterModel().setSerialID("M001VS240005");
-//            if ("error".equals((String) json.get("result"))){
-//                System.err.println((String) json.get("message"));
-//                System.exit(1);
-//            } 
+//            String lsdate = "2024-09-28";
+//            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+//            Date date = null;
+//            try {
+//                date = sdf.parse(lsdate);
+//            } catch (ParseException e) {
+//                System.err.println("Error parsing date: " + e.getMessage());
+//            }
 //            
-//            json = model.getMasterModel().getMasterModel().setClientID("M00124000028");
-//            if ("error".equals((String) json.get("result"))){
-//                System.err.println((String) json.get("message"));
-//                System.exit(1);
-//            } 
-//            
-//            json = model.getMasterModel().getMasterModel().setVSPNo("M001VSP24005");
-//            if ("error".equals((String) json.get("result"))){
-//                System.err.println((String) json.get("message"));
-//                System.exit(1);
-//            } 
-//            
-//            json = model.getMasterModel().getMasterModel().setBrInsID("M001IN240001");
-//            if ("error".equals((String) json.get("result"))){
-//                System.err.println((String) json.get("message"));
-//                System.exit(1);
-//            } 
-//            
-//            json = model.getMasterModel().getMasterModel().setInsTypID("0");
-//            if ("error".equals((String) json.get("result"))){
-//                System.err.println((String) json.get("message"));
-//                System.exit(1);
-//            } 
-//            
-//            json = model.getMasterModel().getMasterModel().setIsNew("0");
-//            if ("error".equals((String) json.get("result"))){
-//                System.err.println((String) json.get("message"));
-//                System.exit(1);
-//            } 
-//            
-//            json = model.getMasterModel().getMasterModel().setRemarks("TEST INSURANCE POLICY");
-//            if ("error".equals((String) json.get("result"))){
-//                System.err.println((String) json.get("message"));
-//                System.exit(1);
-//            } 
-//            
-//            json = model.getMasterModel().getMasterModel().setAONCPayM("0");
-//            if ("error".equals((String) json.get("result"))){
-//                System.err.println((String) json.get("message"));
-//                System.exit(1);
-//            } 
-//            
-//            json = model.getMasterModel().getMasterModel().setODTCAmt(new BigDecimal("10000.00"));
+//            json = model.getMasterModel().getMasterModel().setValidFrmDte(date);
 //            if ("error".equals((String) json.get("result"))){
 //                System.err.println((String) json.get("message"));
 //                System.exit(1);
 //            }
-//            
-//            json = model.getMasterModel().getMasterModel().setODTCRate(0.5);
-//            if ("error".equals((String) json.get("result"))){
-//                System.err.println((String) json.get("message"));
-//                System.exit(1);
+//
+//            lsdate = "2028-09-30";
+//            sdf = new SimpleDateFormat("yyyy-MM-dd");
+//            date = null;
+//            try {
+//                date = sdf.parse(lsdate);
+//            } catch (ParseException e) {
+//                System.err.println("Error parsing date: " + e.getMessage());
 //            }
-//            
-//            json = model.getMasterModel().getMasterModel().setODTCPrem(new BigDecimal("16000.00"));
-//            if ("error".equals((String) json.get("result"))){
-//                System.err.println((String) json.get("message"));
-//                System.exit(1);
-//            }
-//            
-//            json = model.getMasterModel().getMasterModel().setAONCAmt(new BigDecimal("0.00"));
-//            if ("error".equals((String) json.get("result"))){
-//                System.err.println((String) json.get("message"));
-//                System.exit(1);
-//            }
-//            
-//            json = model.getMasterModel().getMasterModel().setAONCRate(0.2);
-//            if ("error".equals((String) json.get("result"))){
-//                System.err.println((String) json.get("message"));
-//                System.exit(1);
-//            }
-//            
-//            json = model.getMasterModel().getMasterModel().setAONCPrem(new BigDecimal("0.00"));
-//            if ("error".equals((String) json.get("result"))){
-//                System.err.println((String) json.get("message"));
-//                System.exit(1);
-//            }
-//            
-//            json = model.getMasterModel().getMasterModel().setBdyCAmt(new BigDecimal("0.00"));
-//            if ("error".equals((String) json.get("result"))){
-//                System.err.println((String) json.get("message"));
-//                System.exit(1);
-//            }
-//            
-//            json = model.getMasterModel().getMasterModel().setBdyCPrem(new BigDecimal("0.00"));
-//            if ("error".equals((String) json.get("result"))){
-//                System.err.println((String) json.get("message"));
-//                System.exit(1);
-//            }
-//            
-//            json = model.getMasterModel().getMasterModel().setPrDCAmt(new BigDecimal("0.00"));
-//            if ("error".equals((String) json.get("result"))){
-//                System.err.println((String) json.get("message"));
-//                System.exit(1);
-//            }
-//            
-//            json = model.getMasterModel().getMasterModel().setPrDCPrem(new BigDecimal("0.00"));
-//            if ("error".equals((String) json.get("result"))){
-//                System.err.println((String) json.get("message"));
-//                System.exit(1);
-//            }
-//            
-//            json = model.getMasterModel().getMasterModel().setPAcCAmt(new BigDecimal("0.00"));
-//            if ("error".equals((String) json.get("result"))){
-//                System.err.println((String) json.get("message"));
-//                System.exit(1);
-//            }
-//            
-//            json = model.getMasterModel().getMasterModel().setPacCPrem(new BigDecimal("0.00"));
-//            if ("error".equals((String) json.get("result"))){
-//                System.err.println((String) json.get("message"));
-//                System.exit(1);
-//            }
-//            
-//            json = model.getMasterModel().getMasterModel().setTPLAmt(new BigDecimal("0.00"));
-//            if ("error".equals((String) json.get("result"))){
-//                System.err.println((String) json.get("message"));
-//                System.exit(1);
-//            }
-//            
-//            json = model.getMasterModel().getMasterModel().setTPLPrem(new BigDecimal("0.00"));
-//            if ("error".equals((String) json.get("result"))){
-//                System.err.println((String) json.get("message"));
-//                System.exit(1);
-//            }
-//            
-//            json = model.getMasterModel().getMasterModel().setTaxRate(0.8);
-//            if ("error".equals((String) json.get("result"))){
-//                System.err.println((String) json.get("message"));
-//                System.exit(1);
-//            }
-//            
-//            json = model.getMasterModel().getMasterModel().setTaxAmt(new BigDecimal("0.00"));
-//            if ("error".equals((String) json.get("result"))){
-//                System.err.println((String) json.get("message"));
-//                System.exit(1);
-//            }
-//            
-//            json = model.getMasterModel().getMasterModel().setTotalAmt(new BigDecimal("0.00"));
+//
+//            json = model.getMasterModel().getMasterModel().setValidTruDte(date);
 //            if ("error".equals((String) json.get("result"))){
 //                System.err.println((String) json.get("message"));
 //                System.exit(1);
@@ -260,20 +167,19 @@ public class InsurancePolicyProposalTest {
 //        System.out.println("------------------------------RETRIEVAL--------------------------------------");
 //        System.out.println("--------------------------------------------------------------------");
 //        
-//        json = model.openTransaction("M00124000001");
+//        json = model.openTransaction("M001PA240001");
 //        
 //        if (!"success".equals((String) json.get("result"))){
 //            result = false;
 //        } else {
 //            System.out.println("--------------------------------------------------------------------");
-//            System.out.println("INSURANCE POLICY PROPOSAL MASTER");
+//            System.out.println("INSURANCE POLICY MASTER");
 //            System.out.println("--------------------------------------------------------------------");
 //            System.out.println("sTransNox  :  " + model.getMasterModel().getMasterModel().getTransNo());         
 //            System.out.println("dTransact  :  " + model.getMasterModel().getMasterModel().getTransactDte());        
 //            System.out.println("sReferNox  :  " + model.getMasterModel().getMasterModel().getReferNo());         
 //            System.out.println("sClientID  :  " + model.getMasterModel().getMasterModel().getClientID());        
-//            System.out.println("sSerialID  :  " + model.getMasterModel().getMasterModel().getSerialID());        
-//            System.out.println("sVSPNoxxx  :  " + model.getMasterModel().getMasterModel().getVSPNo());           
+//            System.out.println("sSerialID  :  " + model.getMasterModel().getMasterModel().getSerialID());         
 //            System.out.println("sBrInsIDx  :  " + model.getMasterModel().getMasterModel().getBrInsID());         
 //            System.out.println("sInsTypID  :  " + model.getMasterModel().getMasterModel().getInsTypID());        
 //            System.out.println("cIsNewxxx  :  " + model.getMasterModel().getMasterModel().getIsNew());           
@@ -294,13 +200,10 @@ public class InsurancePolicyProposalTest {
 //            System.out.println("nTPLPremx  :  " + model.getMasterModel().getMasterModel().getTPLPrem());         
 //            System.out.println("nTaxRatex  :  " + model.getMasterModel().getMasterModel().getTaxRate());         
 //            System.out.println("nTaxAmtxx  :  " + model.getMasterModel().getMasterModel().getTaxAmt());          
-//            System.out.println("nTotalAmt  :  " + model.getMasterModel().getMasterModel().getTotalAmt());        
-//            System.out.println("sRemarksx  :  " + model.getMasterModel().getMasterModel().getRemarks());         
+//            System.out.println("nTotalAmt  :  " + model.getMasterModel().getMasterModel().getTotalAmt());         
 //            System.out.println("cTranStat  :  " + model.getMasterModel().getMasterModel().getTranStat());        
 //            System.out.println("sModified  :  " + model.getMasterModel().getMasterModel().getModifiedBy());      
 //            System.out.println("dModified  :  " + model.getMasterModel().getMasterModel().getModifiedDte());     
-//            System.out.println("sApproved  :  " + model.getMasterModel().getMasterModel().getApprovedBy());      
-//            System.out.println("dApproved  :  " + model.getMasterModel().getMasterModel().getApprovedDte());     
 //
 //            System.out.println("sOwnrNmxx  :  " + model.getMasterModel().getMasterModel().getOwnrNm());          
 //            System.out.println("cClientTp  :  " + model.getMasterModel().getMasterModel().getClientTp());        
@@ -336,7 +239,7 @@ public class InsurancePolicyProposalTest {
 //            result = true;
 //        }
 //        
-//        json = model.getMasterModel().getMasterModel().setTaxRate(1.8);
+//        json = model.getMasterModel().getMasterModel().setFinType("1");
 //        if ("error".equals((String) json.get("result"))){
 //            System.err.println((String) json.get("message"));
 //            System.exit(1);
@@ -353,12 +256,6 @@ public class InsurancePolicyProposalTest {
 //            System.err.println((String) json.get("message"));
 //            System.exit(1);
 //        }
-//        
-//        json = model.getMasterModel().getMasterModel().setRemarks("TEST INSURANCE POLICY EDIT SAVE");
-//        if ("error".equals((String) json.get("result"))){
-//            System.err.println((String) json.get("message"));
-//            System.exit(1);
-//        } 
 //    
 //        assertTrue(result);
 //        //assertFalse(result);
@@ -383,4 +280,5 @@ public class InsurancePolicyProposalTest {
 //        assertTrue(result);
 //        //assertFalse(result);
 //    }
+    
 }
