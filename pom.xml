@@ -52,5 +52,10 @@
             <artifactId>auto-sales-model</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>auto-clients-model</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 </project>

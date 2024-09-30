@@ -18,6 +18,8 @@ import org.guanzon.appdriver.constant.TransactionStatus;
 import org.guanzon.appdriver.iface.GTransaction;
 import org.guanzon.auto.general.CancelForm;
 import org.guanzon.auto.general.SearchDialog;
+import org.guanzon.auto.model.clients.Model_Client_Master;
+import org.guanzon.auto.model.clients.Model_Vehicle_Serial_Master;
 import org.guanzon.auto.model.insurance.Model_Insurance_Policy_Proposal;
 import org.guanzon.auto.model.sales.Model_VehicleSalesProposal_Master;
 import org.guanzon.auto.validator.insurance.ValidatorFactory;
@@ -314,7 +316,7 @@ public class InsurancePolicyProposal_Master implements GTransaction{
         String lsColName = lsID+"»sBuyCltNm»sCSNoxxxx»sPlateNox"; //"dTransact»"+
         String lsCriteria = "a."+lsID+"»b.sCompnyNm»p.sCSNoxxxx»q.sPlateNox"; //a.dTransact»
         Model_VehicleSalesProposal_Master loEntity = new Model_VehicleSalesProposal_Master(poGRider);
-        String lsSQL = loEntity.getSQL();
+        String lsSQL = loEntity.getSQL() ; 
         
         if(fbByCode){
             lsSQL = MiscUtil.addCondition(lsSQL,  " a.cTranStat <> " + SQLUtil.toSQL(TransactionStatus.STATE_CANCELLED)
@@ -325,7 +327,6 @@ public class InsurancePolicyProposal_Master implements GTransaction{
             lsSQL = MiscUtil.addCondition(lsSQL,  " a.cTranStat <> " + SQLUtil.toSQL(TransactionStatus.STATE_CANCELLED)
                                                 + " AND b.sCompnyNm LIKE " + SQLUtil.toSQL(fsValue + "%")
                                                 + " GROUP BY a.sTransNox ");
-        
         }
         System.out.println("SEARCH VSP: " + lsSQL);
         loJSON = ShowDialogFX.Search(poGRider,
@@ -346,49 +347,78 @@ public class InsurancePolicyProposal_Master implements GTransaction{
         return loJSON;
     }
     
-//    /**
-//     * Search Service Advisor
-//     * @param fsValue Employee name
-//     * @return 
-//     */
-//    public JSONObject searchEmployee(String fsValue){
-//        poJSON = new JSONObject();
-//        String lsSQL =   "  SELECT "                                                                                                                                                                                                 
-//                        + "   a.sEmployID "                                                                                                                                                                                           
-//                        + " , b.sClientID "                                                                                                                                                                                            
-//                        + " , b.sCompnyNm "                                                                                                                                                                                           
-//                        + " , c.sDeptIDxx "                                                                                                                                                                                           
-//                        + " , c.sDeptName "                                                                                                                                                                                           
-//                        + " , e.sBranchCd "                                                                                                                                                                                           
-//                        + " , e.sBranchNm "                                                                                                                                                                                           
-//                        + " FROM GGC_ISysDBF.Employee_Master001 a  "                                                                                                                                                                  
-//                        + " LEFT JOIN GGC_ISysDBF.Client_Master b ON b.sClientID = a.sEmployID "                                                                                                                                      
-//                        + " LEFT JOIN GGC_ISysDBF.Department c ON c.sDeptIDxx = a.sDeptIDxx    "                                                                                                                                      
-//                        + " LEFT JOIN GGC_ISysDBF.Branch_Others d ON d.sBranchCD = a.sBranchCd "                                                                                                                                      
-//                        + " LEFT JOIN GGC_ISysDBF.Branch e ON e.sBranchCD = a.sBranchCd        "                                                                                                                                      
-//                        + " WHERE b.cRecdStat = '1' AND a.cRecdStat = '1' AND ISNULL(a.dFiredxxx) "                                                                                                                                   
-//                        + " AND d.sBranchCD = " + SQLUtil.toSQL(poGRider.getBranchCode());                                                                                                                                                                                      
-//        
-//         lsSQL = MiscUtil.addCondition(lsSQL, "b.sCompnyNm LIKE " + SQLUtil.toSQL(fsValue + "%")); 
-//        
-//        System.out.println("SEARCH EMPLOYEE: " + lsSQL);
-//        poJSON = ShowDialogFX.Search(poGRider,
-//                lsSQL,
-//                fsValue,
-//                "Employee ID»Name»Department»Branch",
-//                "sEmployID»sCompnyNm»sDeptName»sBranchNm",
-//                "a.sEmployID»b.sCompnyNm»c.sDeptName»e.sBranchNm",
-//                0);
-//        
-//        if (poJSON != null) {
-//        } else {
-//            poJSON = new JSONObject();
-//            poJSON.put("result", "error");
-//            poJSON.put("message", "No record loaded.");
-//            return poJSON;
-//        }
-//        
-//        return poJSON;
-//    }
-    
+     /**
+     * Search Service Advisor
+     * @param fsValue Employee name
+     * @return 
+     */
+    public JSONObject searchClient(String fsValue){
+        poJSON = new JSONObject();
+        String lsHeader = "Client ID»Customer»CS No»Plate No";
+        String lsColName = "sClientID»sBuyCltNm»sCSNoxxxx»sPlateNox"; 
+        String lsCriteria = "a.sClientID»a.sCompnyNm»g.sCSNoxxxx»h.sPlateNox"; 
+        String lsSQL =    " SELECT "                                                                       
+                        + "    a.sClientID "                                                               
+                        + "  , a.sLastName "                                                               
+                        + "  , a.sFrstName "                                                               
+                        + "  , a.sMiddName "                                                               
+                        + "  , a.sMaidenNm "                                                               
+                        + "  , a.sSuffixNm "                                                               
+                        + "  , a.sTitlexxx "                                                               
+                        + "  , a.cGenderCd "                                                               
+                        + "  , a.cCvilStat "                                                               
+                        + "  , a.sCitizenx "                                                               
+                        + "  , a.dBirthDte "                                                               
+                        + "  , a.sBirthPlc "                                                               
+                        + "  , a.sTaxIDNox "                                                               
+                        + "  , a.sLTOIDxxx "                                                               
+                        + "  , a.sAddlInfo "                                                               
+                        + "  , a.sCompnyNm "                                                               
+                        + "  , a.sClientNo "                                                               
+                        + "  , a.sSpouseID "                                                               
+                        + "  , a.cClientTp "                                                               
+                        + "  , a.cRecdStat "                                                               
+                        + "  , a.sEntryByx "                                                               
+                        + "  , a.dEntryDte "                                                               
+                        + "  , a.sModified "                                                               
+                        + "  , a.dModified "                                                               
+                        + "  , IFNULL(CONCAT( IFNULL(CONCAT(c.sHouseNox,' ') , ''), "                      
+                        + "  IFNULL(CONCAT(c.sAddressx,' ') , ''), "                                       
+                        + "  IFNULL(CONCAT(d.sBrgyName,' '), ''),  "                                       
+                        + "  IFNULL(CONCAT(e.sTownName, ', '),''), "                                       
+                        + "  IFNULL(CONCAT(f.sProvName),'') )	, '') AS sAddressx "                         
+                        + "  , g.sCSNoxxxx "                                                               
+                        + "  , h.sPlateNox "                                                               
+                        + "  , i.sDescript "                                                               
+                        + " FROM client_master a "                                                         
+                        + " LEFT JOIN client_address b ON b.sClientID = a.sClientID AND b.cPrimaryx = 1 "  
+                        + " LEFT JOIN addresses c ON c.sAddrssID = b.sAddrssID "                           
+                        + " LEFT JOIN barangay d ON d.sBrgyIDxx = c.sBrgyIDxx  "                           
+                        + " LEFT JOIN towncity e ON e.sTownIDxx = c.sTownIDxx  "                           
+                        + " LEFT JOIN province f ON f.sProvIDxx = e.sProvIDxx  "                           
+                        + " LEFT JOIN vehicle_serial g ON g.sClientID = a.sClientID "                      
+                        + " LEFT JOIN vehicle_serial_registration h ON h.sSerialID = g.sSerialID "         
+                        + " LEFT JOIN vehicle_master i ON i.sVhclIDxx = g.sVhclIDxx "   ;      
+        
+        lsSQL = MiscUtil.addCondition(lsSQL, "a.sCompnyNm LIKE " + SQLUtil.toSQL(fsValue + "%")); 
+        
+        System.out.println("SEARCH CLIENT: " + lsSQL);
+        poJSON = ShowDialogFX.Search(poGRider,
+                lsSQL,
+                fsValue,
+                lsHeader,
+                lsColName,
+                lsCriteria,
+                1);
+        
+        if (poJSON != null) {
+        } else {
+            poJSON = new JSONObject();
+            poJSON.put("result", "error");
+            poJSON.put("message", "No record loaded.");
+            return poJSON;
+        }
+        
+        return poJSON;
+    }
 }

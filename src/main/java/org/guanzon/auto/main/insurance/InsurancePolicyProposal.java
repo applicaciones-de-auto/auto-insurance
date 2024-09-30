@@ -213,7 +213,7 @@ public class InsurancePolicyProposal implements GTransaction{
         loJSON = poController.searchVSP(fsValue,fbByCode);
         if(!"error".equals((String) loJSON.get("result"))){
             poController.getMasterModel().setVSPTranNo((String) loJSON.get("sTransNox"));
-            poController.getMasterModel().setVSPNo((String) loJSON.get("sVSPNOxxx"));
+//            poController.getMasterModel().setVSPNo((String) loJSON.get("sVSPNOxxx"));
             poController.getMasterModel().setSerialID((String) loJSON.get("sSerialID"));
             poController.getMasterModel().setClientID((String) loJSON.get("sClientID"));
             poController.getMasterModel().setOwnrNm((String) loJSON.get("sBuyCltNm"));
@@ -225,9 +225,13 @@ public class InsurancePolicyProposal implements GTransaction{
             poController.getMasterModel().setEngineNo((String) loJSON.get("sEngineNo"));
             poController.getMasterModel().setVhclFDsc((String) loJSON.get("sVhclFDsc"));
             
+            poController.getMasterModel().setIsNew("0");
+            
+            poController.getMasterModel().setBrInsID((String) loJSON.get("sInsCodex")); //Compre
+            
         } else {     
             poController.getMasterModel().setVSPTranNo("");
-            poController.getMasterModel().setVSPNo("");           
+//            poController.getMasterModel().setVSPNo("");           
             poController.getMasterModel().setSerialID("");        
             poController.getMasterModel().setClientID("");        
             poController.getMasterModel().setOwnrNm("");          
@@ -237,7 +241,10 @@ public class InsurancePolicyProposal implements GTransaction{
             poController.getMasterModel().setPlateNo("");         
             poController.getMasterModel().setFrameNo("");         
             poController.getMasterModel().setEngineNo("");        
-            poController.getMasterModel().setVhclFDsc("");    
+            poController.getMasterModel().setVhclFDsc("");   
+            
+            poController.getMasterModel().setIsNew("");
+            poController.getMasterModel().setBrInsID("");
         }
         return loJSON;
     }
