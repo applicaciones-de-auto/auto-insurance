@@ -61,7 +61,7 @@ public class InsurancePolicyProposalMaster {
                         + "  , a.nPrDCAmtx "                                                                   
                         + "  , a.nPrDCPrem "                                                                   
                         + "  , a.nPAcCAmtx "                                                                   
-                        + "  , a.nPacCPrem "                                                                   
+                        + "  , a.nPAcCPrem "                                                                   
                         + "  , a.nTPLAmtxx "                                                                   
                         + "  , a.nTPLPremx "                                                                   
                         + "  , a.nTaxRatex "                                                                   
@@ -95,7 +95,9 @@ public class InsurancePolicyProposalMaster {
                         + "  , i.sPlateNox "                                                                   
                         + "  , j.sDescript AS sVhclFDsc "                                                      
                         + "  , l.sBrInsNme "                                                                   
-                        + "  , m.sInsurNme "                                                                   
+                        + "  , m.sInsurNme "                                                                
+                        + "  , DATE(n.dDelvryDt) AS dDelvryDt"                                                                 
+                        + "  , n.nUnitPrce "                                                                  
                         + " FROM insurance_policy_proposal a "                                                 
                         + " LEFT JOIN client_master b ON b.sClientID = a.sClientID "  /*owner*/                
                         + " LEFT JOIN client_address c ON c.sClientID = a.sClientID AND c.cPrimaryx = '1' "    
@@ -108,7 +110,8 @@ public class InsurancePolicyProposalMaster {
                         + " LEFT JOIN vehicle_master j ON j.sVhclIDxx = h.sVhclIDxx "                          
                         + " LEFT JOIN client_master k ON k.sClientID = h.sCoCltIDx " /*co-owner*/              
                         + " LEFT JOIN insurance_company_branches l ON l.sBrInsIDx = a.sBrInsIDx "              
-                        + " LEFT JOIN insurance_company m ON m.sInsurIDx = l.sInsurIDx " 
+                        + " LEFT JOIN insurance_company m ON m.sInsurIDx = l.sInsurIDx "             
+                        + " LEFT JOIN vsp_master n ON n.sTransNox = a.sVSPNoxxx " 
                         + " WHERE 0=1";
         
         

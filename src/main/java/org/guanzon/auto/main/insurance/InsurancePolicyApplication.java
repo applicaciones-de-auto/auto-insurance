@@ -207,35 +207,16 @@ public class InsurancePolicyApplication  implements GTransaction{
         return loJSON;
     }
     
-    public JSONObject searchVSP(String fsValue, boolean fbByCode){
+    public JSONObject searchEmployee(String fsValue){
         JSONObject loJSON = new JSONObject();
-        JSONObject loJSONDet = new JSONObject();
-//        loJSON = poController.searchVSP(fsValue,fbByCode);
+        loJSON = poController.searchEmployee(fsValue);
         if(!"error".equals((String) loJSON.get("result"))){
-            poController.getMasterModel().setVSPTrnNo((String) loJSON.get("sVSPNOxxx"));
-            poController.getMasterModel().setSerialID((String) loJSON.get("sSerialID"));
-            poController.getMasterModel().setClientID((String) loJSON.get("sClientID"));
-            poController.getMasterModel().setOwnrNm((String) loJSON.get("sBuyCltNm"));
-            poController.getMasterModel().setClientTp((String) loJSON.get("cClientTp"));
-            poController.getMasterModel().setAddress((String) loJSON.get("sAddressx"));
-            poController.getMasterModel().setCSNo((String) loJSON.get("sCSNoxxxx"));
-            poController.getMasterModel().setPlateNo((String) loJSON.get("sPlateNox"));
-            poController.getMasterModel().setFrameNo((String) loJSON.get("sFrameNox"));
-            poController.getMasterModel().setEngineNo((String) loJSON.get("sEngineNo"));
-            poController.getMasterModel().setVhclFDsc((String) loJSON.get("sVhclFDsc"));
+            poController.getMasterModel().setEmployID((String) loJSON.get("sEmployID"));
+            poController.getMasterModel().setEmpName((String) loJSON.get("sCompnyNm"));
             
         } else {     
-            poController.getMasterModel().setVSPTrnNo("");           
-            poController.getMasterModel().setSerialID("");        
-            poController.getMasterModel().setClientID("");        
-            poController.getMasterModel().setOwnrNm("");          
-            poController.getMasterModel().setClientTp("");        
-            poController.getMasterModel().setAddress("");         
-            poController.getMasterModel().setCSNo("");            
-            poController.getMasterModel().setPlateNo("");         
-            poController.getMasterModel().setFrameNo("");         
-            poController.getMasterModel().setEngineNo("");        
-            poController.getMasterModel().setVhclFDsc("");    
+            poController.getMasterModel().setEmployID("");
+            poController.getMasterModel().setEmpName("");
         }
         return loJSON;
     }
