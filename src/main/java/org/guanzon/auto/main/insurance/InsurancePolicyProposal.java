@@ -210,34 +210,40 @@ public class InsurancePolicyProposal implements GTransaction{
         BigDecimal ldblBasicPrem = new BigDecimal("0.00");
         BigDecimal ldblTaxAmt = new BigDecimal("0.00");
         BigDecimal ldblTotalAmt = new BigDecimal("0.00");
-        //Own Damage/Theft * rate = odt premium
+        Double ldblODTCRate = 0.00;
+        Double ldblAONCRate = 0.00;
+        Double ldblTaxRate = 0.00;
+        //Own Damage/Theft * (rate / 100) = odt premium
         //nODTCAmtx * nODTCRate = nODTCPrem
-        ldblODTCPrem = poController.getMasterModel().getODTCAmt().multiply(new BigDecimal(poController.getMasterModel().getODTCRate()));
+        ldblODTCRate = poController.getMasterModel().getODTCRate() / 100;
+        ldblODTCPrem = poController.getMasterModel().getODTCAmt().multiply(new BigDecimal(ldblODTCRate));
         poController.getMasterModel().setODTCPrem(ldblODTCPrem);
         
         //cAONCPayM = cha / foc
-        //nAONCAmtx * nAONCRate = nAONCPrem 
+        //nAONCAmtx * (nAONCRate / 100) = nAONCPrem 
         if(poController.getMasterModel().getAONCPayM().equals("cha")){
-            ldblONCPrem = poController.getMasterModel().getAONCAmt().multiply(new BigDecimal(poController.getMasterModel().getAONCRate()));
-            poController.getMasterModel().setODTCPrem(ldblONCPrem);
+            ldblAONCRate = poController.getMasterModel().getAONCRate() / 100;
+            ldblONCPrem = poController.getMasterModel().getAONCAmt().multiply(new BigDecimal(ldblAONCRate));
+            poController.getMasterModel().setAONCPrem(ldblONCPrem);
         } else {
-            poController.getMasterModel().setODTCPrem(ldblONCPrem); //0.00
+            poController.getMasterModel().setAONCPrem(ldblONCPrem); //0.00
         }
         
         //BASIC PREMIUM = (nODTCPrem + nAONCPrem + nBdyCPrem + nPrDCPrem + nPAcCPrem + nTPLPremx)
         ldblBasicPrem = poController.getMasterModel().getODTCPrem().add(poController.getMasterModel().getAONCPrem()).add(poController.getMasterModel().getBdyCPrem())
                     .add(poController.getMasterModel().getPrDCPrem()).add(poController.getMasterModel().getPAcCPrem()).add(poController.getMasterModel().getTPLPrem());
-        //BASIC PREMIUM * nTaxRatex = nTaxAmtxx
-        ldblTaxAmt = ldblBasicPrem.multiply(new BigDecimal(poController.getMasterModel().getTaxRate()));
+        //BASIC PREMIUM * (nTaxRatex /100) = nTaxAmtxx
+        ldblTaxRate = poController.getMasterModel().getTaxRate() / 100;
+        ldblTaxAmt = ldblBasicPrem.multiply(new BigDecimal(ldblTaxRate));
         
         //BASIC PREMIUM + nTaxAmtxx = nTotalAmt 
         ldblTotalAmt = ldblBasicPrem.add(ldblTaxAmt);
         
-        if (ldblTotalAmt.compareTo(new BigDecimal("0.00")) < 0){
-            loJSON.put("result", "error");
-            loJSON.put("message", "Invalid Total Amount: " + ldblTotalAmt + " . ");
-            return loJSON;
-        }
+//        if (ldblTotalAmt.compareTo(new BigDecimal("0.00")) < 0){
+//            loJSON.put("result", "error");
+//            loJSON.put("message", "Invalid Total Amount: " + ldblTotalAmt + " . ");
+//            return loJSON;
+//        }
         
         poController.getMasterModel().setTaxAmt(ldblTaxAmt); 
         poController.getMasterModel().setTotalAmt(ldblTotalAmt); 

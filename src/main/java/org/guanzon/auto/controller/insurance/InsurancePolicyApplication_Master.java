@@ -19,6 +19,7 @@ import org.guanzon.appdriver.iface.GTransaction;
 import org.guanzon.auto.general.CancelForm;
 import org.guanzon.auto.general.SearchDialog;
 import org.guanzon.auto.model.insurance.Model_Insurance_Policy_Application;
+import org.guanzon.auto.model.insurance.Model_Insurance_Policy_Proposal;
 import org.guanzon.auto.validator.insurance.ValidatorFactory;
 import org.guanzon.auto.validator.insurance.ValidatorInterface;
 import org.json.simple.JSONObject;
@@ -347,5 +348,39 @@ public class InsurancePolicyApplication_Master implements GTransaction{
         return poJSON;
     }
     
-    
+     /**
+     * Search Insurance Proposal
+     * @param fsValue Employee name
+     * @return 
+     */
+    public JSONObject searchProposal(String fsValue){
+        JSONObject loJSON = new JSONObject();
+        String lsHeader = "Proposal No»Customer»CS No»Plate No";
+        String lsColName = "sReferNox»sBuyCltNm»sCSNoxxxx»sPlateNox"; 
+        String lsCriteria = "a.sReferNox»b.sCompnyNm»h.sCSNoxxxx»i.sPlateNox"; 
+        Model_Insurance_Policy_Proposal loEntity = new Model_Insurance_Policy_Proposal(poGRider);
+        String lsSQL = loEntity.getSQL();      
+        
+        lsSQL = MiscUtil.addCondition(lsSQL, " a.sReferNox LIKE " + SQLUtil.toSQL(fsValue + "%")
+                                               + " AND a.cTranStat = " + SQLUtil.toSQL(TransactionStatus.STATE_CLOSED));  //Approve
+        
+        System.out.println("SEARCH INSURANCE PROPOSAL: " + lsSQL);
+        loJSON = ShowDialogFX.Search(poGRider,
+                lsSQL,
+                fsValue,
+                lsHeader,
+                lsColName,
+                lsCriteria,
+                1);
+        
+        if (loJSON != null) {
+        } else {
+            loJSON = new JSONObject();
+            loJSON.put("result", "error");
+            loJSON.put("message", "No record loaded.");
+            return loJSON;
+        }
+        
+        return loJSON;
+    }
 }
