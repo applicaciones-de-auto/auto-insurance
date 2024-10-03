@@ -97,7 +97,11 @@ public class InsurancePolicyProposalMaster {
                         + "  , l.sBrInsNme "                                                                   
                         + "  , m.sInsurNme "                                                                
                         + "  , DATE(n.dDelvryDt) AS dDelvryDt"                                                                 
-                        + "  , n.nUnitPrce "                                                                  
+                        + "  , n.nUnitPrce "                                                             
+                        + "  , o.sBankIDxx "                                                             
+                        + "  , o.sBankname "    
+                        + "  , TRIM(CONCAT_WS(' ',ja.sMakeDesc, jb.sModelDsc, jc.sTypeDesc, j.sTransMsn, j.nYearModl )) AS sVhclDesc "
+                        + "  , jd.sColorDsc "                                                             
                         + " FROM insurance_policy_proposal a "                                                 
                         + " LEFT JOIN client_master b ON b.sClientID = a.sClientID "  /*owner*/                
                         + " LEFT JOIN client_address c ON c.sClientID = a.sClientID AND c.cPrimaryx = '1' "    
@@ -107,11 +111,16 @@ public class InsurancePolicyProposalMaster {
                         + " LEFT JOIN province g ON g.sProvIDxx = f.sProvIDxx  "                               
                         + " LEFT JOIN vehicle_serial h ON h.sSerialID = a.sSerialID "                          
                         + " LEFT JOIN vehicle_serial_registration i ON i.sSerialID = a.sSerialID "             
-                        + " LEFT JOIN vehicle_master j ON j.sVhclIDxx = h.sVhclIDxx "                          
+                        + " LEFT JOIN vehicle_master j ON j.sVhclIDxx = h.sVhclIDxx "       
+                        + " LEFT JOIN vehicle_make ja ON ja.sMakeIDxx = j.sMakeIDxx  "
+                        + " LEFT JOIN vehicle_model jb ON jb.sModelIDx = j.sModelIDx "
+                        + " LEFT JOIN vehicle_type jc ON jc.sTypeIDxx = j.sTypeIDxx  "
+                        + " LEFT JOIN vehicle_color jd ON jd.sColorIDx = j.sColorIDx "                   
                         + " LEFT JOIN client_master k ON k.sClientID = h.sCoCltIDx " /*co-owner*/              
                         + " LEFT JOIN insurance_company_branches l ON l.sBrInsIDx = a.sBrInsIDx "              
                         + " LEFT JOIN insurance_company m ON m.sInsurIDx = l.sInsurIDx "             
-                        + " LEFT JOIN vsp_master n ON n.sTransNox = a.sVSPNoxxx " 
+                        + " LEFT JOIN vsp_master n ON n.sTransNox = a.sVSPNoxxx "             
+                        + " LEFT JOIN vsp_finance o ON o.sTransNox = a.sVSPNoxxx "
                         + " WHERE 0=1";
         
         

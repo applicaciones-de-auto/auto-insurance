@@ -419,7 +419,7 @@ public class InsurancePolicyProposal_Master implements GTransaction{
             case "0": //TPL
                 lsCondition = " (NOT ISNULL(a.sInsTplCd) AND a.sInsTplCd != '') ";
             break;
-            case "1": //Compre{
+            case "1": //Compre
                 lsCondition = " (NOT ISNULL(a.sInsCodex) AND a.sInsCodex != '') ";
             break;
             case "2": //Both
@@ -473,7 +473,7 @@ public class InsurancePolicyProposal_Master implements GTransaction{
     public JSONObject searchClient(String fsValue){
         JSONObject loJSON = new JSONObject();
         String lsHeader = "Client ID»Customer»CS No»Plate No";
-        String lsColName = "sClientID»sBuyCltNm»sCSNoxxxx»sPlateNox"; 
+        String lsColName = "sClientID»sCompnyNm»sCSNoxxxx»sPlateNox"; 
         String lsCriteria = "a.sClientID»a.sCompnyNm»g.sCSNoxxxx»h.sPlateNox"; 
         String lsSQL =    " SELECT "                                                                       
                         + "    a.sClientID "                                                               
@@ -504,9 +504,9 @@ public class InsurancePolicyProposal_Master implements GTransaction{
                         + " LEFT JOIN barangay d ON d.sBrgyIDxx = c.sBrgyIDxx  "                           
                         + " LEFT JOIN towncity e ON e.sTownIDxx = c.sTownIDxx  "                           
                         + " LEFT JOIN province f ON f.sProvIDxx = e.sProvIDxx  "                           
-                        + " LEFT JOIN vehicle_serial g ON g.sClientID = a.sClientID "                      
+                        + " INNER JOIN vehicle_serial g ON g.sClientID = a.sClientID "                      
                         + " LEFT JOIN vehicle_serial_registration h ON h.sSerialID = g.sSerialID "         
-                        + " LEFT JOIN vehicle_master i ON i.sVhclIDxx = g.sVhclIDxx "   ;      
+                        + " INNER JOIN vehicle_master i ON i.sVhclIDxx = g.sVhclIDxx "   ;      
         
         lsSQL = MiscUtil.addCondition(lsSQL, " a.sCompnyNm LIKE " + SQLUtil.toSQL(fsValue + "%")
                                                + " AND a.cRecdStat = " + SQLUtil.toSQL(RecordStatus.ACTIVE)); 
@@ -539,7 +539,7 @@ public class InsurancePolicyProposal_Master implements GTransaction{
     public JSONObject searchInsurance(String fsValue){
         JSONObject loJSON = new JSONObject();
         String lsHeader = "Branch ID»Insurance»Address";
-        String lsColName = "sBrInsIDx»CONCAT(b.sInsurNme, ' ',  a.sBrInsNme)»CONCAT(a.sAddressx, ' ', c.sTownName, ' ',  d.sProvName)";
+        String lsColName = "sBrInsIDx»sInsurnce»xAddressx";
         String lsCriteria = "a.sBrInsIDx»CONCAT(b.sInsurNme,' ',a.sBrInsNme)»CONCAT(a.sAddressx, ' ', c.sTownName, ' ',  d.sProvName)";
         Model_Insurance_Branches loEntity = new Model_Insurance_Branches(poGRider);
         String lsSQL = loEntity.getSQL(); 
