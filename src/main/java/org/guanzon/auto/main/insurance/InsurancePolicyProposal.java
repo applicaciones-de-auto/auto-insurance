@@ -277,7 +277,7 @@ public class InsurancePolicyProposal implements GTransaction{
             poController.getMasterModel().setDelvryDt(SQLUtil.toDate((String) loJSON.get("dDelvryDt"), SQLUtil.FORMAT_SHORT_DATE));      
             poController.getMasterModel().setUnitPrce(new BigDecimal((String) loJSON.get("nUnitPrce")));
             
-            poController.getMasterModel().setIsNew("0");
+            poController.getMasterModel().setIsNew("y");
             switch(fsInsType){
                 case "0":
                     poController.getMasterModel().setBrInsID((String) loJSON.get("sInsTplCd")); 

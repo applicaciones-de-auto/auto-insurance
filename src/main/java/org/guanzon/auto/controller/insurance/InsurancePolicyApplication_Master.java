@@ -16,10 +16,12 @@ import org.guanzon.appdriver.base.SQLUtil;
 import org.guanzon.appdriver.constant.EditMode;
 import org.guanzon.appdriver.constant.TransactionStatus;
 import org.guanzon.appdriver.iface.GTransaction;
+import org.guanzon.auto.controller.parameter.Bank_Branches;
 import org.guanzon.auto.general.CancelForm;
 import org.guanzon.auto.general.SearchDialog;
 import org.guanzon.auto.model.insurance.Model_Insurance_Policy_Application;
 import org.guanzon.auto.model.insurance.Model_Insurance_Policy_Proposal;
+import org.guanzon.auto.model.parameter.Model_Bank_Branches;
 import org.guanzon.auto.validator.insurance.ValidatorFactory;
 import org.guanzon.auto.validator.insurance.ValidatorInterface;
 import org.json.simple.JSONObject;
@@ -304,7 +306,7 @@ public class InsurancePolicyApplication_Master implements GTransaction{
     }
     
     /**
-     * Search Employee
+     * Search Employee Insurance coordinator
      * @param fsValue Employee name
      * @return 
      */
@@ -356,13 +358,14 @@ public class InsurancePolicyApplication_Master implements GTransaction{
     public JSONObject searchProposal(String fsValue){
         JSONObject loJSON = new JSONObject();
         String lsHeader = "Proposal No»Customer»CS No»Plate No";
-        String lsColName = "sReferNox»sBuyCltNm»sCSNoxxxx»sPlateNox"; 
+        String lsColName = "sReferNox»sOwnrNmxx»sCSNoxxxx»sPlateNox"; 
         String lsCriteria = "a.sReferNox»b.sCompnyNm»h.sCSNoxxxx»i.sPlateNox"; 
         Model_Insurance_Policy_Proposal loEntity = new Model_Insurance_Policy_Proposal(poGRider);
         String lsSQL = loEntity.getSQL();      
         
         lsSQL = MiscUtil.addCondition(lsSQL, " a.sReferNox LIKE " + SQLUtil.toSQL(fsValue + "%")
-                                               + " AND a.cTranStat = " + SQLUtil.toSQL(TransactionStatus.STATE_CLOSED));  //Approve
+                                               + " AND a.cTranStat = " + SQLUtil.toSQL(TransactionStatus.STATE_CLOSED) //Approve
+                                               );  
         
         System.out.println("SEARCH INSURANCE PROPOSAL: " + lsSQL);
         loJSON = ShowDialogFX.Search(poGRider,
@@ -383,4 +386,49 @@ public class InsurancePolicyApplication_Master implements GTransaction{
         
         return loJSON;
     }
+    
+     /**
+     * Search Insurance Proposal
+     * @param fsValue Employee name
+     * @return 
+     */
+    public JSONObject searchBank(String fsValue){
+        JSONObject loJSON = new JSONObject();
+        String lsHeader = "Bank Branch ID»Bank Name»Branch»Address";
+        String lsColName = "sBrBankID»sBankName»sBrBankNm»xAddressx"; 
+        String lsCriteria = "a.sBrBankID»b.sBankName»a.sBrBankNm»UPPER(CONCAT(a.sAddressx,' ', c.sTownName, ', ', d.sProvName))";
+        Model_Bank_Branches loEntity = new Model_Bank_Branches(poGRider);
+        String lsSQL = loEntity.getSQL();
+        
+        lsSQL = MiscUtil.addCondition(lsSQL, " a.sReferNox LIKE " + SQLUtil.toSQL(fsValue + "%")
+                                               + " AND a.cTranStat = " + SQLUtil.toSQL(TransactionStatus.STATE_CLOSED));  //Approve
+        
+        System.out.println("SEARCH BANK: " + lsSQL);
+        loJSON = ShowDialogFX.Search(poGRider,
+                lsSQL,
+                fsValue,
+                lsHeader,
+                lsColName,
+                lsCriteria,
+                1);
+        
+        if (loJSON != null) {
+        } else {
+            loJSON = new JSONObject();
+            loJSON.put("result", "error");
+            loJSON.put("message", "No record loaded.");
+            return loJSON;
+        }
+        
+        return loJSON;
+    }
+    
+    public JSONObject checkExistingApplication(){
+        JSONObject loJSON = new JSONObject();
+        
+        
+        
+        return loJSON;
+    }
+    
 }

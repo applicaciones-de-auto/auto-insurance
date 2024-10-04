@@ -9,14 +9,17 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.guanzon.appdriver.agent.ShowDialogFX;
 import org.guanzon.appdriver.base.GRider;
 import org.guanzon.appdriver.base.MiscUtil;
+import org.guanzon.appdriver.base.SQLUtil;
 import org.guanzon.appdriver.constant.EditMode;
 import org.guanzon.appdriver.constant.TransactionStatus;
 import org.guanzon.appdriver.iface.GTransaction;
 import org.guanzon.auto.general.CancelForm;
 import org.guanzon.auto.general.SearchDialog;
 import org.guanzon.auto.model.insurance.Model_Insurance_Policy;
+import org.guanzon.auto.model.insurance.Model_Insurance_Policy_Application;
 import org.guanzon.auto.validator.insurance.ValidatorFactory;
 import org.guanzon.auto.validator.insurance.ValidatorInterface;
 import org.json.simple.JSONObject;
@@ -300,4 +303,39 @@ public class InsurancePolicy_Master implements GTransaction{
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
+     /**
+     * Search Insurance Policy Application
+     * @param fsValue Employee name
+     * @return 
+     */
+    public JSONObject searchPolicyApplication(String fsValue){
+        JSONObject loJSON = new JSONObject();
+        String lsHeader = "Application No»Customer»CS No»Plate No";
+        String lsColName = "sTransNox»sOwnrNmxx»sCSNoxxxx»sPlateNox"; 
+        String lsCriteria = "a.sTransNox»b.sCompnyNm»h.sCSNoxxxx»i.sPlateNox"; 
+        Model_Insurance_Policy_Application loEntity = new Model_Insurance_Policy_Application(poGRider);
+        String lsSQL = loEntity.getSQL();      
+        
+        lsSQL = MiscUtil.addCondition(lsSQL, " a.sTransNox LIKE " + SQLUtil.toSQL(fsValue + "%")
+                                               + " AND a.cTranStat <> " + SQLUtil.toSQL(TransactionStatus.STATE_CANCELLED));  
+        
+        System.out.println("SEARCH INSURANCE POLICY APPLICATION: " + lsSQL);
+        loJSON = ShowDialogFX.Search(poGRider,
+                lsSQL,
+                fsValue,
+                lsHeader,
+                lsColName,
+                lsCriteria,
+                0);
+        
+        if (loJSON != null) {
+        } else {
+            loJSON = new JSONObject();
+            loJSON.put("result", "error");
+            loJSON.put("message", "No record loaded.");
+            return loJSON;
+        }
+        
+        return loJSON;
+    }
 }

@@ -207,4 +207,52 @@ public class InsurancePolicy  implements GTransaction{
         return loJSON;
     }
     
+    
+    /**
+     * Search Insurance Policy Application
+     * @param fsValue
+     * @return 
+     */
+    public JSONObject searchApplication(String fsValue){
+        JSONObject loJSON = new JSONObject();
+        loJSON = poController.searchPolicyApplication(fsValue);
+        if(!"error".equals((String) loJSON.get("result"))){
+            poController.getMasterModel().setReferNo((String) loJSON.get("sTransNox"));
+            poController.getMasterModel().setPropslNo((String) loJSON.get("sReferNox"));
+            poController.getMasterModel().setOwnrNm((String) loJSON.get("sOwnrNmxx"));
+            poController.getMasterModel().setAddress((String) loJSON.get("sAddressx"));
+            poController.getMasterModel().setCSNo((String) loJSON.get("sCSNoxxxx"));
+            poController.getMasterModel().setPlateNo((String) loJSON.get("sPlateNox"));
+            poController.getMasterModel().setEngineNo((String) loJSON.get("sEngineNo"));
+            poController.getMasterModel().setFrameNo((String) loJSON.get("sFrameNox"));
+            poController.getMasterModel().setVhclFDsc((String) loJSON.get("sVhclFDsc"));
+            
+            poController.getMasterModel().setInsurNme((String) loJSON.get("sInsurNme"));
+            poController.getMasterModel().setBrInsNme((String) loJSON.get("sBrInsNme"));
+            poController.getMasterModel().setInsTypID((String) loJSON.get("sInsTypID"));
+            poController.getMasterModel().setIsNew((String) loJSON.get("cIsNewxxx"));
+            poController.getMasterModel().setBrBankNm((String) loJSON.get("sBrBankNm"));
+            poController.getMasterModel().setBankName((String) loJSON.get("sBankname"));
+            
+        } else {     
+            poController.getMasterModel().setReferNo("");
+            poController.getMasterModel().setPropslNo("");
+            poController.getMasterModel().setOwnrNm("");
+            poController.getMasterModel().setAddress("");
+            poController.getMasterModel().setCSNo("");
+            poController.getMasterModel().setPlateNo("");
+            poController.getMasterModel().setEngineNo("");
+            poController.getMasterModel().setFrameNo("");
+            poController.getMasterModel().setVhclFDsc("");
+            
+            poController.getMasterModel().setInsurNme("");
+            poController.getMasterModel().setBrInsNme("");
+            poController.getMasterModel().setInsTypID("");
+            poController.getMasterModel().setIsNew("");
+            poController.getMasterModel().setBrBankNm("");
+            poController.getMasterModel().setBankName("");
+        }
+        return loJSON;
+    }
+    
 }

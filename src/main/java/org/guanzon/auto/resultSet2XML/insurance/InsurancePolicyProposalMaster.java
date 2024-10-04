@@ -101,7 +101,8 @@ public class InsurancePolicyProposalMaster {
                         + "  , o.sBankIDxx "                                                             
                         + "  , o.sBankname "    
                         + "  , TRIM(CONCAT_WS(' ',ja.sMakeDesc, jb.sModelDsc, jc.sTypeDesc, j.sTransMsn, j.nYearModl )) AS sVhclDesc "
-                        + "  , jd.sColorDsc "                                                             
+                        + "  , jd.sColorDsc "    
+                        + "  , p.sTransNox AS sInsAppNo "                                                          
                         + " FROM insurance_policy_proposal a "                                                 
                         + " LEFT JOIN client_master b ON b.sClientID = a.sClientID "  /*owner*/                
                         + " LEFT JOIN client_address c ON c.sClientID = a.sClientID AND c.cPrimaryx = '1' "    
@@ -120,7 +121,8 @@ public class InsurancePolicyProposalMaster {
                         + " LEFT JOIN insurance_company_branches l ON l.sBrInsIDx = a.sBrInsIDx "              
                         + " LEFT JOIN insurance_company m ON m.sInsurIDx = l.sInsurIDx "             
                         + " LEFT JOIN vsp_master n ON n.sTransNox = a.sVSPNoxxx "             
-                        + " LEFT JOIN vsp_finance o ON o.sTransNox = a.sVSPNoxxx "
+                        + " LEFT JOIN vsp_finance o ON o.sTransNox = a.sVSPNoxxx "            
+                        + " LEFT JOIN insurance_policy_application p ON p.sReferNox = a.sTransNox AND p.cTranStat <> " + SQLUtil.toSQL(TransactionStatus.STATE_CANCELLED)
                         + " WHERE 0=1";
         
         

@@ -207,7 +207,12 @@ public class InsurancePolicyApplication  implements GTransaction{
         return loJSON;
     }
     
-    public JSONObject searchEmployee(String fsValue){
+    /**
+     * Search Insurance Coordinator
+     * @param fsValue
+     * @return 
+     */
+    public JSONObject searchInsuranceCoordinator(String fsValue){
         JSONObject loJSON = new JSONObject();
         loJSON = poController.searchEmployee(fsValue);
         if(!"error".equals((String) loJSON.get("result"))){
@@ -264,6 +269,27 @@ public class InsurancePolicyApplication  implements GTransaction{
             poController.getMasterModel().setIsNew("");
             poController.getMasterModel().setBrBankID("");
             poController.getMasterModel().setBrBankNm("");
+        }
+        return loJSON;
+    }
+    
+    /**
+     * Search Bank
+     * @param fsValue
+     * @return 
+     */
+    public JSONObject searchbank(String fsValue){
+        JSONObject loJSON = new JSONObject();
+        loJSON = poController.searchBank(fsValue);
+        if(!"error".equals((String) loJSON.get("result"))){
+            poController.getMasterModel().setBrBankID((String) loJSON.get("sBrBankID"));
+            poController.getMasterModel().setBrBankNm((String) loJSON.get("sBrBankNm"));
+            poController.getMasterModel().setBankName((String) loJSON.get("sBankName"));
+            
+        } else {     
+            poController.getMasterModel().setBrBankID("");
+            poController.getMasterModel().setBrBankNm("");
+            poController.getMasterModel().setBankName("");
         }
         return loJSON;
     }

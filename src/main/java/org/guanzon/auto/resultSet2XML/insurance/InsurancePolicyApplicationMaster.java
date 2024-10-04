@@ -60,7 +60,7 @@ public class InsurancePolicyApplicationMaster {
                         + "  ELSE 'ACTIVE' "                                                                                     
                         + "    END AS sTranStat "                                                                                
                          /*POLICY PROPOSAL*/                                                                                     
-                        + " , b.dTransact AS dPropslDt"                                                                                      
+                        + " , DATE(b.dTransact) AS dPropslDt"                                                                                      
                         + " , b.sReferNox AS sPropslNo "                                                                         
                         + " , b.sClientID "                                                                                      
                         + " , b.sSerialID "                                                                       
@@ -100,12 +100,15 @@ public class InsurancePolicyApplicationMaster {
                         + " , i.sEngineNo "                                                                                      
                         + " , i.cVhclNewx "                                                                                      
                         + " , j.sPlateNox "                                                                                      
-                        + " , k.sDescript AS sVhclFDsc "                                                                         
+                        + " , k.sDescript AS sVhclFDsc "  
+                        + "  , TRIM(CONCAT_WS(' ',ka.sMakeDesc, kb.sModelDsc, kc.sTypeDesc, k.sTransMsn, k.nYearModl )) AS sVhclDesc "
+                        + "  , kd.sColorDsc "                                                                         
                         + " , m.sBrInsNme "                                                                                      
                         + " , n.sInsurNme "
                         + " , o.sCompnyNm AS sEmpNamex "
                         + " , p.sBrBankNm "
-                        + " , q.sBankName "                                                                                      
+                        + " , q.sBankName "    
+                        + " , r.sPolicyNo "                                                                                     
                         + " FROM insurance_policy_application a "                                                                 
                         + " LEFT JOIN insurance_policy_proposal b ON b.sTransNox = a.sReferNox "                                  
                         + " LEFT JOIN client_master c ON c.sClientID = b.sClientID "  /*owner*/                                   
@@ -116,13 +119,18 @@ public class InsurancePolicyApplicationMaster {
                         + " LEFT JOIN province h ON h.sProvIDxx = g.sProvIDxx  "                                                  
                         + " LEFT JOIN vehicle_serial i ON i.sSerialID = b.sSerialID "                                             
                         + " LEFT JOIN vehicle_serial_registration j ON j.sSerialID = b.sSerialID "                                
-                        + " LEFT JOIN vehicle_master k ON k.sVhclIDxx = i.sVhclIDxx "                                             
+                        + " LEFT JOIN vehicle_master k ON k.sVhclIDxx = i.sVhclIDxx "     
+                        + " LEFT JOIN vehicle_make ka ON ka.sMakeIDxx = k.sMakeIDxx  "
+                        + " LEFT JOIN vehicle_model kb ON kb.sModelIDx = k.sModelIDx "
+                        + " LEFT JOIN vehicle_type kc ON kc.sTypeIDxx = k.sTypeIDxx  "
+                        + " LEFT JOIN vehicle_color kd ON kd.sColorIDx = k.sColorIDx "                                         
                         + " LEFT JOIN client_master l ON l.sClientID = i.sCoCltIDx  " /*co-owner*/                                
                         + " LEFT JOIN insurance_company_branches m ON m.sBrInsIDx = b.sBrInsIDx  "                                
                         + " LEFT JOIN insurance_company n ON n.sInsurIDx = m.sInsurIDx " 
                         + " LEFT JOIN ggc_isysdbf.client_master o ON o.sClientID = a.sEmployID " 
                         + " LEFT JOIN banks_branches p ON p.sBrBankID = a.sBrBankID  "                     
-                        + " LEFT JOIN banks q ON q.sBankIDxx = p.sBankIDxx "
+                        + " LEFT JOIN banks q ON q.sBankIDxx = p.sBankIDxx "                            
+                        + " LEFT JOIN insurance_policy r ON r.sReferNox = a.sTransNox AND r.cTranStat <> " + SQLUtil.toSQL(TransactionStatus.STATE_CANCELLED)
                         + " WHERE 0=1";
         
         
