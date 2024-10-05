@@ -5,6 +5,7 @@
  */
 package org.guanzon.auto.main.insurance;
 
+import java.math.BigDecimal;
 import org.guanzon.appdriver.base.GRider;
 import org.guanzon.appdriver.constant.EditMode;
 import org.guanzon.appdriver.iface.GTransaction;
@@ -244,13 +245,41 @@ public class InsurancePolicyApplication  implements GTransaction{
             poController.getMasterModel().setEngineNo((String) loJSON.get("sEngineNo"));
             poController.getMasterModel().setFrameNo((String) loJSON.get("sFrameNox"));
             poController.getMasterModel().setVhclFDsc((String) loJSON.get("sVhclFDsc"));
+            poController.getMasterModel().setVhclDesc((String) loJSON.get("sVhclDesc"));
+            poController.getMasterModel().setColorDsc((String) loJSON.get("sColorDsc"));
             
             poController.getMasterModel().setInsurNme((String) loJSON.get("sInsurNme"));
             poController.getMasterModel().setBrInsNme((String) loJSON.get("sBrInsNme"));
             poController.getMasterModel().setInsTypID((String) loJSON.get("sInsTypID"));
             poController.getMasterModel().setIsNew((String) loJSON.get("cIsNewxxx"));
-            poController.getMasterModel().setBrBankID((String) loJSON.get("sBankIDxx"));
-            poController.getMasterModel().setBrBankNm((String) loJSON.get("sBankname"));
+            poController.getMasterModel().setVSPTrnNo((String) loJSON.get("sVSPNoxxx"));
+            if((String) loJSON.get("sVSPNoxxx") != null ){
+                if(!((String) loJSON.get("sVSPNoxxx")).trim().isEmpty()){
+                    poController.getMasterModel().setFinType((String) loJSON.get("cPayModex"));
+                    poController.getMasterModel().setBrBankID((String) loJSON.get("sBankIDxx"));
+                    poController.getMasterModel().setBankName((String) loJSON.get("sBankname"));
+                    poController.getMasterModel().setBrBankNm("");
+                }
+            }
+            
+            poController.getMasterModel().setAONCPayM((String) loJSON.get("cAONCPayM"));
+            poController.getMasterModel().setODTCRate(Double.valueOf((String) loJSON.get("nODTCRate")));
+            poController.getMasterModel().setAONCRate(Double.valueOf((String) loJSON.get("nAONCRate")));
+            poController.getMasterModel().setTaxRate(Double.valueOf((String) loJSON.get("nTaxRatex")));
+            poController.getMasterModel().setODTCAmt(new BigDecimal((String) loJSON.get("nODTCAmtx")));
+            poController.getMasterModel().setODTCPrem(new BigDecimal((String) loJSON.get("nODTCPrem")));
+            poController.getMasterModel().setAONCAmt(new BigDecimal((String) loJSON.get("nAONCAmtx")));
+            poController.getMasterModel().setAONCPrem(new BigDecimal((String) loJSON.get("nAONCPrem")));
+            poController.getMasterModel().setBdyCAmt(new BigDecimal((String) loJSON.get("nBdyCAmtx")));
+            poController.getMasterModel().setBdyCPrem(new BigDecimal((String) loJSON.get("nBdyCPrem")));
+            poController.getMasterModel().setPrDCAmt(new BigDecimal((String) loJSON.get("nPrDCAmtx")));
+            poController.getMasterModel().setPrDCPrem(new BigDecimal((String) loJSON.get("nPrDCPrem")));
+            poController.getMasterModel().setPAcCAmt(new BigDecimal((String) loJSON.get("nPAcCAmtx")));
+            poController.getMasterModel().setPAcCPrem(new BigDecimal((String) loJSON.get("nPAcCPrem")));
+            poController.getMasterModel().setTPLAmt(new BigDecimal((String) loJSON.get("nTPLAmtxx")));
+            poController.getMasterModel().setTPLPrem(new BigDecimal((String) loJSON.get("nTPLPremx")));
+            poController.getMasterModel().setTaxAmt(new BigDecimal((String) loJSON.get("nTaxAmtxx")));
+            poController.getMasterModel().setTotalAmt(new BigDecimal((String) loJSON.get("nTotalAmt")));     
             
         } else {     
             poController.getMasterModel().setReferNo("");
@@ -262,13 +291,35 @@ public class InsurancePolicyApplication  implements GTransaction{
             poController.getMasterModel().setEngineNo("");
             poController.getMasterModel().setFrameNo("");
             poController.getMasterModel().setVhclFDsc("");
+            poController.getMasterModel().setVhclDesc("");
+            poController.getMasterModel().setColorDsc("");
             
             poController.getMasterModel().setInsurNme("");
             poController.getMasterModel().setBrInsNme("");
             poController.getMasterModel().setInsTypID("");
             poController.getMasterModel().setIsNew("");
+            poController.getMasterModel().setFinType("");
             poController.getMasterModel().setBrBankID("");
             poController.getMasterModel().setBrBankNm("");
+            
+            poController.getMasterModel().setAONCPayM("");
+            poController.getMasterModel().setODTCRate(0.00);
+            poController.getMasterModel().setAONCRate(0.00);
+            poController.getMasterModel().setTaxRate(0.00);
+            poController.getMasterModel().setODTCAmt(new BigDecimal("0.00"));
+            poController.getMasterModel().setODTCPrem(new BigDecimal("0.00"));
+            poController.getMasterModel().setAONCAmt(new BigDecimal("0.00"));
+            poController.getMasterModel().setAONCPrem(new BigDecimal("0.00"));
+            poController.getMasterModel().setBdyCAmt(new BigDecimal("0.00"));
+            poController.getMasterModel().setBdyCPrem(new BigDecimal("0.00"));
+            poController.getMasterModel().setPrDCAmt(new BigDecimal("0.00"));
+            poController.getMasterModel().setPrDCPrem(new BigDecimal("0.00"));
+            poController.getMasterModel().setPAcCAmt(new BigDecimal("0.00"));
+            poController.getMasterModel().setPAcCPrem(new BigDecimal("0.00"));
+            poController.getMasterModel().setTPLAmt(new BigDecimal("0.00"));
+            poController.getMasterModel().setTPLPrem(new BigDecimal("0.00"));
+            poController.getMasterModel().setTaxAmt(new BigDecimal("0.00"));
+            poController.getMasterModel().setTotalAmt(new BigDecimal("0.00"));
         }
         return loJSON;
     }

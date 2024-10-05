@@ -14,6 +14,7 @@ import org.guanzon.appdriver.base.GRider;
 import org.guanzon.appdriver.base.MiscUtil;
 import org.guanzon.appdriver.base.SQLUtil;
 import org.guanzon.appdriver.constant.EditMode;
+import org.guanzon.appdriver.constant.RecordStatus;
 import org.guanzon.appdriver.constant.TransactionStatus;
 import org.guanzon.appdriver.iface.GTransaction;
 import org.guanzon.auto.controller.parameter.Bank_Branches;
@@ -400,8 +401,8 @@ public class InsurancePolicyApplication_Master implements GTransaction{
         Model_Bank_Branches loEntity = new Model_Bank_Branches(poGRider);
         String lsSQL = loEntity.getSQL();
         
-        lsSQL = MiscUtil.addCondition(lsSQL, " a.sReferNox LIKE " + SQLUtil.toSQL(fsValue + "%")
-                                               + " AND a.cTranStat = " + SQLUtil.toSQL(TransactionStatus.STATE_CLOSED));  //Approve
+        lsSQL = MiscUtil.addCondition(lsSQL, " CONCAT(b.sBankName,' ', a.sBrBankNm) LIKE " + SQLUtil.toSQL(fsValue + "%")
+                                               + " AND a.cRecdStat = " + SQLUtil.toSQL(RecordStatus.ACTIVE));  //Approve
         
         System.out.println("SEARCH BANK: " + lsSQL);
         loJSON = ShowDialogFX.Search(poGRider,

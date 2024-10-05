@@ -6,6 +6,7 @@
 package org.guanzon.auto.main.insurance;
 
 import org.guanzon.appdriver.base.GRider;
+import org.guanzon.appdriver.base.SQLUtil;
 import org.guanzon.appdriver.constant.EditMode;
 import org.guanzon.appdriver.iface.GTransaction;
 import org.guanzon.auto.controller.insurance.InsurancePolicy_Master;
@@ -213,7 +214,7 @@ public class InsurancePolicy  implements GTransaction{
      * @param fsValue
      * @return 
      */
-    public JSONObject searchApplication(String fsValue){
+    public JSONObject searchPolicyApplication(String fsValue){
         JSONObject loJSON = new JSONObject();
         loJSON = poController.searchPolicyApplication(fsValue);
         if(!"error".equals((String) loJSON.get("result"))){
@@ -233,6 +234,8 @@ public class InsurancePolicy  implements GTransaction{
             poController.getMasterModel().setIsNew((String) loJSON.get("cIsNewxxx"));
             poController.getMasterModel().setBrBankNm((String) loJSON.get("sBrBankNm"));
             poController.getMasterModel().setBankName((String) loJSON.get("sBankname"));
+            poController.getMasterModel().setValidFrmDte(SQLUtil.toDate((String) loJSON.get("dValidFrm"), SQLUtil.FORMAT_SHORT_DATE));
+            poController.getMasterModel().setValidTruDte(SQLUtil.toDate((String) loJSON.get("dValidTru"), SQLUtil.FORMAT_SHORT_DATE));
             
         } else {     
             poController.getMasterModel().setReferNo("");
@@ -251,6 +254,8 @@ public class InsurancePolicy  implements GTransaction{
             poController.getMasterModel().setIsNew("");
             poController.getMasterModel().setBrBankNm("");
             poController.getMasterModel().setBankName("");
+            poController.getMasterModel().setValidFrmDte(SQLUtil.toDate("1900-01-01", SQLUtil.FORMAT_SHORT_DATE));
+            poController.getMasterModel().setValidTruDte(SQLUtil.toDate("1900-01-01", SQLUtil.FORMAT_SHORT_DATE));
         }
         return loJSON;
     }

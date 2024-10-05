@@ -80,7 +80,7 @@ public class InsurancePolicyApplicationMaster {
                         + " , b.nPrDCAmtx "                                                                                      
                         + " , b.nPrDCPrem "                                                                                      
                         + " , b.nPAcCAmtx "                                                                                      
-                        + " , b.nPacCPrem "                                                                                      
+                        + " , b.nPAcCPrem "                                                                                      
                         + " , b.nTPLAmtxx "                                                                                      
                         + " , b.nTPLPremx "                                                                                      
                         + " , b.nTaxRatex "                                                                                      
