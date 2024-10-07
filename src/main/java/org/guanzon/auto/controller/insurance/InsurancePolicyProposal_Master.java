@@ -497,7 +497,12 @@ public class InsurancePolicyProposal_Master implements GTransaction{
                         + "  , g.sEngineNo "                                                     
                         + "  , g.sFrameNox "                                                              
                         + "  , h.sPlateNox "                                                               
-                        + "  , i.sDescript AS sVhclFDsc"                                                               
+                        + "  , i.sDescript AS sVhclFDsc" 
+                        + "  , TRIM(CONCAT_WS(' ',ia.sMakeDesc, ib.sModelDsc, ic.sTypeDesc, i.sTransMsn, i.nYearModl )) AS sVhclDesc "
+                        + "  , i.cVhclSize "
+                        + "  , ib.sUnitType "
+                        + "  , ib.sBodyType "
+                        + "  , id.sColorDsc "                                                                 
                         + " FROM client_master a "                                                         
                         + " LEFT JOIN client_address b ON b.sClientID = a.sClientID AND b.cPrimaryx = 1 "  
                         + " LEFT JOIN addresses c ON c.sAddrssID = b.sAddrssID "                           
@@ -506,7 +511,11 @@ public class InsurancePolicyProposal_Master implements GTransaction{
                         + " LEFT JOIN province f ON f.sProvIDxx = e.sProvIDxx  "                           
                         + " INNER JOIN vehicle_serial g ON g.sClientID = a.sClientID "                      
                         + " LEFT JOIN vehicle_serial_registration h ON h.sSerialID = g.sSerialID "         
-                        + " INNER JOIN vehicle_master i ON i.sVhclIDxx = g.sVhclIDxx "   ;      
+                        + " INNER JOIN vehicle_master i ON i.sVhclIDxx = g.sVhclIDxx "
+                        + " LEFT JOIN vehicle_make ia ON ia.sMakeIDxx = i.sMakeIDxx  "
+                        + " LEFT JOIN vehicle_model ib ON ib.sModelIDx = i.sModelIDx "
+                        + " LEFT JOIN vehicle_type ic ON ic.sTypeIDxx = i.sTypeIDxx  "
+                        + " LEFT JOIN vehicle_color id ON id.sColorIDx = i.sColorIDx "   ;      
         
         lsSQL = MiscUtil.addCondition(lsSQL, " a.sCompnyNm LIKE " + SQLUtil.toSQL(fsValue + "%")
                                                + " AND a.cRecdStat = " + SQLUtil.toSQL(RecordStatus.ACTIVE)); 

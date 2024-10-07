@@ -5,6 +5,7 @@
  */
 package org.guanzon.auto.main.insurance;
 
+import java.math.BigDecimal;
 import org.guanzon.appdriver.base.GRider;
 import org.guanzon.appdriver.base.SQLUtil;
 import org.guanzon.appdriver.constant.EditMode;
@@ -115,6 +116,11 @@ public class InsurancePolicy  implements GTransaction{
             return poJSON;
         }
         
+        poJSON = validateEntry();
+        if("error".equalsIgnoreCase((String)poJSON.get("result"))){
+            return poJSON;
+        }
+        
         if (!pbWtParent) poGRider.beginTrans();
         
         poJSON =  poController.saveTransaction();
@@ -204,6 +210,100 @@ public class InsurancePolicy  implements GTransaction{
     
     public JSONObject computeAmount(){
         JSONObject loJSON = new JSONObject();
+        BigDecimal ldblODTCPrem = new BigDecimal("0.00");
+        BigDecimal ldblONCPrem = new BigDecimal("0.00");
+        BigDecimal ldblBasicPrem = new BigDecimal("0.00");
+        BigDecimal ldblGrossAmt = new BigDecimal("0.00");
+        BigDecimal ldblNetTotl = new BigDecimal("0.00");
+        BigDecimal ldblDocAmt = new BigDecimal("0.00");
+        BigDecimal ldblVATAmt = new BigDecimal("0.00");
+        BigDecimal ldblLGUTaxAm = new BigDecimal("0.00");
+        BigDecimal ldblAuthFee = new BigDecimal("0.00");
+        BigDecimal ldblDiscount = new BigDecimal("0.00");
+        BigDecimal ldblCommissn = new BigDecimal("0.00");
+        BigDecimal ldblPayAmt = new BigDecimal("0.00");
+        Double ldblODTCRate = poController.getMasterModel().getODTCRate();
+        Double ldblAONCRate = poController.getMasterModel().getAONCRate();
+        Double ldblDocRate = poController.getMasterModel().getDocRate();
+        Double ldblVATRate = poController.getMasterModel().getVATRate();
+        Double ldblLGUTaxRt = poController.getMasterModel().getLGUTaxRt();
+        
+        //Own Damage/Theft * (rate / 100) = odt premium
+        //nODTCAmtx * nODTCRate = nODTCPrem
+        ldblODTCRate = ldblODTCRate / 100;
+        ldblODTCPrem = poController.getMasterModel().getODTCAmt().multiply(new BigDecimal(ldblODTCRate));
+        poController.getMasterModel().setODTCPrem(ldblODTCPrem);
+        
+        //cAONCPayM = cha / foc
+        //nAONCAmtx * (nAONCRate / 100) = nAONCPrem 
+        if(poController.getMasterModel().getAONCPayM().equals("cha")){
+            ldblAONCRate = ldblAONCRate / 100;
+            ldblONCPrem = poController.getMasterModel().getAONCAmt().multiply(new BigDecimal(ldblAONCRate));
+            poController.getMasterModel().setAONCPrem(ldblONCPrem);
+        } else {
+            poController.getMasterModel().setAONCPrem(ldblONCPrem); //0.00
+        }
+        
+        //BASIC PREMIUM = (nODTCPrem + nAONCPrem + nBdyCPrem + nPrDCPrem + nPAcCPrem + nTPLPremx)
+        ldblBasicPrem = poController.getMasterModel().getODTCPrem().add(poController.getMasterModel().getAONCPrem()).add(poController.getMasterModel().getBdyCPrem())
+                    .add(poController.getMasterModel().getPrDCPrem()).add(poController.getMasterModel().getPAcCPrem()).add(poController.getMasterModel().getTPLPrem());
+        
+        //BASIC PREMIUM * (nDocRatex /100) = nDocAmtxx
+        ldblDocRate = ldblDocRate / 100;
+        ldblDocAmt = ldblBasicPrem.multiply(new BigDecimal(ldblDocRate));
+        //BASIC PREMIUM * (nVATRatex /100) = nVATAmtxx
+        ldblVATRate = ldblVATRate / 100;
+        ldblVATAmt = ldblBasicPrem.multiply(new BigDecimal(ldblVATRate));
+        //BASIC PREMIUM * (nLGUTaxRt /100) = nLGUTaxAm
+        ldblLGUTaxRt = ldblLGUTaxRt / 100;
+        ldblLGUTaxAm = ldblBasicPrem.multiply(new BigDecimal(ldblLGUTaxRt));
+        //Authentication fee
+        ldblAuthFee = poController.getMasterModel().getAuthFee();
+        //.add(ldblTaxAmt).add(ldblTaxAmt) // nTaxAmtxx
+        //BASIC PREMIUM  + nDocAmtxx + nVATAmtxx + nLGUTaxAm + nAuthFeex = nGrossAmt 
+        ldblGrossAmt = ldblBasicPrem.add(ldblDocAmt).add(ldblVATAmt).add(ldblLGUTaxAm).add(ldblAuthFee);
+        ldblDiscount = poController.getMasterModel().getDiscAmt();
+        ldblNetTotl = ldblGrossAmt.subtract(ldblDiscount);
+        ldblCommissn = poController.getMasterModel().getCommissn();
+        ldblPayAmt = ldblGrossAmt.subtract(ldblCommissn);
+        
+        poController.getMasterModel().setDocAmt(ldblDocAmt); 
+        poController.getMasterModel().setVATAmt(ldblVATAmt); 
+        poController.getMasterModel().setLGUTaxAm(ldblLGUTaxAm); 
+        poController.getMasterModel().setGrossAmt(ldblGrossAmt); 
+        poController.getMasterModel().setNetTotal(ldblNetTotl); 
+        poController.getMasterModel().setPayAmt(ldblPayAmt); 
+        
+        return loJSON;
+    }
+    
+    public JSONObject validateEntry(){
+        JSONObject loJSON = new JSONObject();
+        BigDecimal ldblNetTotalAmt = poController.getMasterModel().getNetTotal(); 
+        BigDecimal ldblGrosslAmt = poController.getMasterModel().getGrossAmt(); 
+        Double ldblDocRate = poController.getMasterModel().getDocRate();
+        Double ldblVATRate = poController.getMasterModel().getVATRate();
+        Double ldblLGUTaxRt = poController.getMasterModel().getLGUTaxRt();
+        Double ldblTaxRateTotal = ldblDocRate + ldblVATRate + ldblLGUTaxRt;
+        
+        //Do not allow when total tax rate is greater that the tax rate settled in application
+        if(ldblTaxRateTotal >= poController.getMasterModel().getTaxRate() ){
+            loJSON.put("result", "error");
+            loJSON.put("message", "Total tax rate cannot be greater than the tax settled in Policy Application. ");
+            return loJSON;
+        }
+        
+        if (ldblGrosslAmt.compareTo(new BigDecimal("0.00")) < 0){
+            loJSON.put("result", "error");
+            loJSON.put("message", "Invalid Gross Amount: " + ldblGrosslAmt + " . ");
+            return loJSON;
+        }
+        
+        if (ldblNetTotalAmt.compareTo(new BigDecimal("0.00")) < 0){
+            loJSON.put("result", "error");
+            loJSON.put("message", "Invalid Net Total Amount: " + ldblNetTotalAmt + " . ");
+            return loJSON;
+        }
         
         return loJSON;
     }
@@ -227,6 +327,11 @@ public class InsurancePolicy  implements GTransaction{
             poController.getMasterModel().setEngineNo((String) loJSON.get("sEngineNo"));
             poController.getMasterModel().setFrameNo((String) loJSON.get("sFrameNox"));
             poController.getMasterModel().setVhclFDsc((String) loJSON.get("sVhclFDsc"));
+            poController.getMasterModel().setVhclDesc((String) loJSON.get("sVhclDesc"));  
+            poController.getMasterModel().setVhclSize((String) loJSON.get("cVhclSize"));  
+            poController.getMasterModel().setBodyType((String) loJSON.get("sBodyType"));
+            poController.getMasterModel().setUnitType((String) loJSON.get("sUnitType"));    
+            poController.getMasterModel().setColorDsc((String) loJSON.get("sColorDsc")); 
             
             poController.getMasterModel().setInsurNme((String) loJSON.get("sInsurNme"));
             poController.getMasterModel().setBrInsNme((String) loJSON.get("sBrInsNme"));
@@ -236,6 +341,26 @@ public class InsurancePolicy  implements GTransaction{
             poController.getMasterModel().setBankName((String) loJSON.get("sBankname"));
             poController.getMasterModel().setValidFrmDte(SQLUtil.toDate((String) loJSON.get("dValidFrm"), SQLUtil.FORMAT_SHORT_DATE));
             poController.getMasterModel().setValidTruDte(SQLUtil.toDate((String) loJSON.get("dValidTru"), SQLUtil.FORMAT_SHORT_DATE));
+            poController.getMasterModel().setApplicDte(SQLUtil.toDate((String) loJSON.get("dTransact"), SQLUtil.FORMAT_SHORT_DATE));
+            
+            poController.getMasterModel().setAONCPayM((String) loJSON.get("cAONCPayM"));
+            poController.getMasterModel().setODTCRate(Double.valueOf((String) loJSON.get("nODTCRate")));
+            poController.getMasterModel().setAONCRate(Double.valueOf((String) loJSON.get("nAONCRate")));
+            poController.getMasterModel().setTaxRate(Double.valueOf((String) loJSON.get("nTaxRatex")));
+            poController.getMasterModel().setODTCAmt(new BigDecimal((String) loJSON.get("nODTCAmtx")));
+            poController.getMasterModel().setODTCPrem(new BigDecimal((String) loJSON.get("nODTCPrem")));
+            poController.getMasterModel().setAONCAmt(new BigDecimal((String) loJSON.get("nAONCAmtx")));
+            poController.getMasterModel().setAONCPrem(new BigDecimal((String) loJSON.get("nAONCPrem")));
+            poController.getMasterModel().setBdyCAmt(new BigDecimal((String) loJSON.get("nBdyCAmtx")));
+            poController.getMasterModel().setBdyCPrem(new BigDecimal((String) loJSON.get("nBdyCPrem")));
+            poController.getMasterModel().setPrDCAmt(new BigDecimal((String) loJSON.get("nPrDCAmtx")));
+            poController.getMasterModel().setPrDCPrem(new BigDecimal((String) loJSON.get("nPrDCPrem")));
+            poController.getMasterModel().setPAcCAmt(new BigDecimal((String) loJSON.get("nPAcCAmtx")));
+            poController.getMasterModel().setPAcCPrem(new BigDecimal((String) loJSON.get("nPAcCPrem")));
+            poController.getMasterModel().setTPLAmt(new BigDecimal((String) loJSON.get("nTPLAmtxx")));
+            poController.getMasterModel().setTPLPrem(new BigDecimal((String) loJSON.get("nTPLPremx")));
+//            poController.getMasterModel().setTaxAmt(new BigDecimal((String) loJSON.get("nTaxAmtxx")));
+//            poController.getMasterModel().setTotalAmt(new BigDecimal((String) loJSON.get("nTotalAmt")));  
             
         } else {     
             poController.getMasterModel().setReferNo("");
@@ -247,6 +372,11 @@ public class InsurancePolicy  implements GTransaction{
             poController.getMasterModel().setEngineNo("");
             poController.getMasterModel().setFrameNo("");
             poController.getMasterModel().setVhclFDsc("");
+            poController.getMasterModel().setVhclDesc("");  
+            poController.getMasterModel().setVhclSize("");  
+            poController.getMasterModel().setBodyType("");  
+            poController.getMasterModel().setUnitType("");
+            poController.getMasterModel().setColorDsc(""); 
             
             poController.getMasterModel().setInsurNme("");
             poController.getMasterModel().setBrInsNme("");
@@ -256,6 +386,24 @@ public class InsurancePolicy  implements GTransaction{
             poController.getMasterModel().setBankName("");
             poController.getMasterModel().setValidFrmDte(SQLUtil.toDate("1900-01-01", SQLUtil.FORMAT_SHORT_DATE));
             poController.getMasterModel().setValidTruDte(SQLUtil.toDate("1900-01-01", SQLUtil.FORMAT_SHORT_DATE));
+            poController.getMasterModel().setApplicDte(SQLUtil.toDate("1900-01-01", SQLUtil.FORMAT_SHORT_DATE));
+            
+            poController.getMasterModel().setAONCPayM("");
+            poController.getMasterModel().setODTCRate(0.00);
+            poController.getMasterModel().setAONCRate(0.00);
+            poController.getMasterModel().setTaxRate(0.00);
+            poController.getMasterModel().setODTCAmt(new BigDecimal("0.00"));
+            poController.getMasterModel().setODTCPrem(new BigDecimal("0.00"));
+            poController.getMasterModel().setAONCAmt(new BigDecimal("0.00"));
+            poController.getMasterModel().setAONCPrem(new BigDecimal("0.00"));
+            poController.getMasterModel().setBdyCAmt(new BigDecimal("0.00"));
+            poController.getMasterModel().setBdyCPrem(new BigDecimal("0.00"));
+            poController.getMasterModel().setPrDCAmt(new BigDecimal("0.00"));
+            poController.getMasterModel().setPrDCPrem(new BigDecimal("0.00"));
+            poController.getMasterModel().setPAcCAmt(new BigDecimal("0.00"));
+            poController.getMasterModel().setPAcCPrem(new BigDecimal("0.00"));
+            poController.getMasterModel().setTPLAmt(new BigDecimal("0.00"));
+            poController.getMasterModel().setTPLPrem(new BigDecimal("0.00"));
         }
         return loJSON;
     }

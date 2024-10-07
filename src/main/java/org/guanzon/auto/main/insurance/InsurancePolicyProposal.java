@@ -116,6 +116,11 @@ public class InsurancePolicyProposal implements GTransaction{
             return poJSON;
         }
         
+        poJSON = validateEntry();
+        if("error".equalsIgnoreCase((String)poJSON.get("result"))){
+            return poJSON;
+        }
+        
         if (!pbWtParent) poGRider.beginTrans();
         
         poJSON =  poController.saveTransaction();
@@ -239,18 +244,24 @@ public class InsurancePolicyProposal implements GTransaction{
         //BASIC PREMIUM + nTaxAmtxx = nTotalAmt 
         ldblTotalAmt = ldblBasicPrem.add(ldblTaxAmt);
         
-//        if (ldblTotalAmt.compareTo(new BigDecimal("0.00")) < 0){
-//            loJSON.put("result", "error");
-//            loJSON.put("message", "Invalid Total Amount: " + ldblTotalAmt + " . ");
-//            return loJSON;
-//        }
-        
         poController.getMasterModel().setTaxAmt(ldblTaxAmt); 
         poController.getMasterModel().setTotalAmt(ldblTotalAmt); 
         
         return loJSON;
     }
     
+    public JSONObject validateEntry(){
+        JSONObject loJSON = new JSONObject();
+        BigDecimal ldblTotalAmt = poController.getMasterModel().getTotalAmt(); 
+        
+        if (ldblTotalAmt.compareTo(new BigDecimal("0.00")) < 0){
+            loJSON.put("result", "error");
+            loJSON.put("message", "Invalid Total Amount: " + ldblTotalAmt + " . ");
+            return loJSON;
+        }
+        
+        return loJSON;
+    }
     /**
      * Select VSP
      * @param fsValue Client Name
@@ -273,7 +284,13 @@ public class InsurancePolicyProposal implements GTransaction{
             poController.getMasterModel().setPlateNo((String) loJSON.get("sPlateNox"));
             poController.getMasterModel().setFrameNo((String) loJSON.get("sFrameNox"));
             poController.getMasterModel().setEngineNo((String) loJSON.get("sEngineNo"));
-            poController.getMasterModel().setVhclFDsc((String) loJSON.get("sVhclFDsc"));                                              
+            poController.getMasterModel().setVhclFDsc((String) loJSON.get("sVhclFDsc"));  
+            poController.getMasterModel().setVhclDesc((String) loJSON.get("sVhclDesc"));  
+            poController.getMasterModel().setVhclSize((String) loJSON.get("cVhclSize"));  
+            poController.getMasterModel().setBodyType((String) loJSON.get("sBodyType"));
+            poController.getMasterModel().setUnitType((String) loJSON.get("sUnitType"));    
+            poController.getMasterModel().setColorDsc((String) loJSON.get("sColorDsc"));  
+            
             poController.getMasterModel().setDelvryDt(SQLUtil.toDate((String) loJSON.get("dDelvryDt"), SQLUtil.FORMAT_SHORT_DATE));      
             poController.getMasterModel().setUnitPrce(new BigDecimal((String) loJSON.get("nUnitPrce")));
             
@@ -310,7 +327,12 @@ public class InsurancePolicyProposal implements GTransaction{
             poController.getMasterModel().setPlateNo("");         
             poController.getMasterModel().setFrameNo("");         
             poController.getMasterModel().setEngineNo("");        
-            poController.getMasterModel().setVhclFDsc("");                                
+            poController.getMasterModel().setVhclFDsc("");    
+            poController.getMasterModel().setVhclDesc("");  
+            poController.getMasterModel().setVhclSize("");  
+            poController.getMasterModel().setBodyType("");  
+            poController.getMasterModel().setUnitType("");
+            poController.getMasterModel().setColorDsc("");                              
             poController.getMasterModel().setDelvryDt(SQLUtil.toDate("1900-01-01", SQLUtil.FORMAT_SHORT_DATE));      
             poController.getMasterModel().setUnitPrce(new BigDecimal("0.00"));
             
@@ -340,7 +362,12 @@ public class InsurancePolicyProposal implements GTransaction{
             poController.getMasterModel().setPlateNo((String) loJSON.get("sPlateNox"));
             poController.getMasterModel().setFrameNo((String) loJSON.get("sFrameNox"));
             poController.getMasterModel().setEngineNo((String) loJSON.get("sEngineNo"));
-            poController.getMasterModel().setVhclFDsc((String) loJSON.get("sVhclFDsc")); 
+            poController.getMasterModel().setVhclFDsc((String) loJSON.get("sVhclFDsc"));
+            poController.getMasterModel().setVhclDesc((String) loJSON.get("sVhclDesc"));  
+            poController.getMasterModel().setVhclSize((String) loJSON.get("cVhclSize"));  
+            poController.getMasterModel().setBodyType((String) loJSON.get("sBodyType"));
+            poController.getMasterModel().setUnitType((String) loJSON.get("sUnitType"));    
+            poController.getMasterModel().setColorDsc((String) loJSON.get("sColorDsc"));   
         } else {  
             poController.getMasterModel().setSerialID("");        
             poController.getMasterModel().setClientID("");        
@@ -352,6 +379,11 @@ public class InsurancePolicyProposal implements GTransaction{
             poController.getMasterModel().setFrameNo("");         
             poController.getMasterModel().setEngineNo("");        
             poController.getMasterModel().setVhclFDsc(""); 
+            poController.getMasterModel().setVhclDesc("");  
+            poController.getMasterModel().setVhclSize("");  
+            poController.getMasterModel().setBodyType("");  
+            poController.getMasterModel().setUnitType("");
+            poController.getMasterModel().setColorDsc("");    
         }
         
         return loJSON;

@@ -245,7 +245,10 @@ public class InsurancePolicyApplication  implements GTransaction{
             poController.getMasterModel().setEngineNo((String) loJSON.get("sEngineNo"));
             poController.getMasterModel().setFrameNo((String) loJSON.get("sFrameNox"));
             poController.getMasterModel().setVhclFDsc((String) loJSON.get("sVhclFDsc"));
-            poController.getMasterModel().setVhclDesc((String) loJSON.get("sVhclDesc"));
+            poController.getMasterModel().setVhclDesc((String) loJSON.get("sVhclDesc")); 
+            poController.getMasterModel().setVhclSize((String) loJSON.get("cVhclSize"));  
+            poController.getMasterModel().setBodyType((String) loJSON.get("sBodyType"));
+            poController.getMasterModel().setUnitType((String) loJSON.get("sUnitType")); 
             poController.getMasterModel().setColorDsc((String) loJSON.get("sColorDsc"));
             
             poController.getMasterModel().setInsurNme((String) loJSON.get("sInsurNme"));
@@ -292,6 +295,9 @@ public class InsurancePolicyApplication  implements GTransaction{
             poController.getMasterModel().setFrameNo("");
             poController.getMasterModel().setVhclFDsc("");
             poController.getMasterModel().setVhclDesc("");
+            poController.getMasterModel().setVhclSize("");  
+            poController.getMasterModel().setBodyType("");  
+            poController.getMasterModel().setUnitType("");
             poController.getMasterModel().setColorDsc("");
             
             poController.getMasterModel().setInsurNme("");
