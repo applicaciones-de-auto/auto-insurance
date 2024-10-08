@@ -287,7 +287,7 @@ public class InsurancePolicy  implements GTransaction{
         Double ldblTaxRateTotal = ldblDocRate + ldblVATRate + ldblLGUTaxRt;
         
         //Do not allow when total tax rate is greater that the tax rate settled in application
-        if(ldblTaxRateTotal >= poController.getMasterModel().getTaxRate() ){
+        if(ldblTaxRateTotal > poController.getMasterModel().getTaxRate() ){
             loJSON.put("result", "error");
             loJSON.put("message", "Total tax rate cannot be greater than the tax settled in Policy Application. ");
             return loJSON;
@@ -342,7 +342,7 @@ public class InsurancePolicy  implements GTransaction{
             poController.getMasterModel().setValidFrmDte(SQLUtil.toDate((String) loJSON.get("dValidFrm"), SQLUtil.FORMAT_SHORT_DATE));
             poController.getMasterModel().setValidTruDte(SQLUtil.toDate((String) loJSON.get("dValidTru"), SQLUtil.FORMAT_SHORT_DATE));
             poController.getMasterModel().setApplicDte(SQLUtil.toDate((String) loJSON.get("dTransact"), SQLUtil.FORMAT_SHORT_DATE));
-            
+            System.out.println("APPLICATION DATE : " + poController.getMasterModel().getApplicDte());
             poController.getMasterModel().setAONCPayM((String) loJSON.get("cAONCPayM"));
             poController.getMasterModel().setODTCRate(Double.valueOf((String) loJSON.get("nODTCRate")));
             poController.getMasterModel().setAONCRate(Double.valueOf((String) loJSON.get("nAONCRate")));

@@ -88,9 +88,8 @@ public class InsurancePolicyMaster {
                         + "  WHEN a.cTranStat = "+SQLUtil.toSQL(TransactionStatus.STATE_POSTED)+" THEN 'POSTED'       "       
                         + "  ELSE 'ACTIVE' "                                                                                  
                         + "    END AS sTranStat "                                                                             
-                        /*POLICY APPLICATION */                                                                               
-                        + " , b.dTransact AS dApplicDt "                                                                      
-                        + " , b.sReferNox AS sApplicNo "                                                                    
+                        /*POLICY APPLICATION */                                                                        
+                        + " , DATE(b.dTransact) AS dApplicDt "                                                                    
                         + " , b.sEmployID "  
                         /*POLICY PROPOSAL*/                                                                                   
                         + " , c.dTransact AS dPropslDt "                                                                      
