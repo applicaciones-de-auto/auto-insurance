@@ -6,7 +6,11 @@
 package org.guanzon.auto.controller.insurance;
 
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.guanzon.appdriver.agent.ShowDialogFX;
@@ -337,5 +341,59 @@ public class InsurancePolicy_Master implements GTransaction{
         }
         
         return loJSON;
+    }
+    
+     public JSONObject checkExistingPolicy(String fsValue){
+        JSONObject loJSON = new JSONObject();
+        try {
+            //Do not allow multiple application for insurance application
+            String lsID = "";
+            String lsDesc = "";
+            String lsSQL = poModel.makeSelectSQL();
+            lsSQL = MiscUtil.addCondition(lsSQL, " cTranStat <> " + SQLUtil.toSQL(TransactionStatus.STATE_CANCELLED) 
+                                                    + " AND sTransNox <> " + SQLUtil.toSQL(poModel.getTransNo()) 
+                                                    + " AND sReferNox = " + SQLUtil.toSQL(fsValue)   
+                                                    );
+            System.out.println("EXISTING POLICY CHECK: " + lsSQL);
+            ResultSet loRS = poGRider.executeQuery(lsSQL);
+            if (MiscUtil.RecordCount(loRS) > 0){
+                while(loRS.next()){
+                    lsID = loRS.getString("sTransNox");
+                    lsDesc = xsDateShort(loRS.getDate("dTransact"));
+                }
+
+                MiscUtil.close(loRS);
+                loJSON.put("result", "error");
+                loJSON.put("message", "Found an existing policy for policy application."
+                            + "\n\n<Policy No:" + lsID + ">"
+                            + "\n<Policy Date:" + lsDesc + ">"
+                            + "\n\nSave aborted.");
+                return loJSON;
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(InsurancePolicy_Master.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return loJSON;
+    }
+    
+    private static String xsDateShort(java.util.Date fdValue) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        String date = sdf.format(fdValue);
+        return date;
+    }
+
+    private static String xsDateShort(String fsValue) throws org.json.simple.parser.ParseException, java.text.ParseException {
+        SimpleDateFormat fromUser = new SimpleDateFormat("MMMM dd, yyyy");
+        SimpleDateFormat myFormat = new SimpleDateFormat("yyyy-MM-dd");
+        String lsResult = "";
+        lsResult = myFormat.format(fromUser.parse(fsValue));
+        return lsResult;
+    }
+    
+    /*Convert Date to String*/
+    private LocalDate strToDate(String val) {
+        DateTimeFormatter date_formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate localDate = LocalDate.parse(val, date_formatter);
+        return localDate;
     }
 }

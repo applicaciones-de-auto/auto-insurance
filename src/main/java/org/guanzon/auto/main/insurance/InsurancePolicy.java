@@ -6,6 +6,7 @@
 package org.guanzon.auto.main.insurance;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import org.guanzon.appdriver.base.GRider;
 import org.guanzon.appdriver.base.SQLUtil;
 import org.guanzon.appdriver.constant.EditMode;
@@ -224,9 +225,9 @@ public class InsurancePolicy  implements GTransaction{
         BigDecimal ldblPayAmt = new BigDecimal("0.00");
         Double ldblODTCRate = poController.getMasterModel().getODTCRate();
         Double ldblAONCRate = poController.getMasterModel().getAONCRate();
-        Double ldblDocRate = poController.getMasterModel().getDocRate();
-        Double ldblVATRate = poController.getMasterModel().getVATRate();
-        Double ldblLGUTaxRt = poController.getMasterModel().getLGUTaxRt();
+        Double ldblDocRate = 0.00; //poController.getMasterModel().getDocRate();
+        Double ldblVATRate = 0.00; // poController.getMasterModel().getVATRate();
+        Double ldblLGUTaxRt = 0.00; //poController.getMasterModel().getLGUTaxRt();
         
         //Own Damage/Theft * (rate / 100) = odt premium
         //nODTCAmtx * nODTCRate = nODTCPrem
@@ -248,15 +249,25 @@ public class InsurancePolicy  implements GTransaction{
         ldblBasicPrem = poController.getMasterModel().getODTCPrem().add(poController.getMasterModel().getAONCPrem()).add(poController.getMasterModel().getBdyCPrem())
                     .add(poController.getMasterModel().getPrDCPrem()).add(poController.getMasterModel().getPAcCPrem()).add(poController.getMasterModel().getTPLPrem());
         
-        //BASIC PREMIUM * (nDocRatex /100) = nDocAmtxx
-        ldblDocRate = ldblDocRate / 100;
-        ldblDocAmt = ldblBasicPrem.multiply(new BigDecimal(ldblDocRate));
-        //BASIC PREMIUM * (nVATRatex /100) = nVATAmtxx
-        ldblVATRate = ldblVATRate / 100;
-        ldblVATAmt = ldblBasicPrem.multiply(new BigDecimal(ldblVATRate));
-        //BASIC PREMIUM * (nLGUTaxRt /100) = nLGUTaxAm
-        ldblLGUTaxRt = ldblLGUTaxRt / 100;
-        ldblLGUTaxAm = ldblBasicPrem.multiply(new BigDecimal(ldblLGUTaxRt));
+        if(ldblBasicPrem.compareTo(new BigDecimal(0.00)) > 0){
+            //BASIC PREMIUM * (nDocRatex /100) = nDocAmtxx
+    //        ldblDocRate = ldblDocRate / 100;
+    //        ldblDocAmt = ldblBasicPrem.multiply(new BigDecimal(ldblDocRate));
+            ldblDocAmt = poController.getMasterModel().getDocAmt();
+            ldblDocRate = ldblDocAmt.divide(ldblBasicPrem, 10, RoundingMode.HALF_UP).doubleValue() * 100;
+
+            //BASIC PREMIUM * (nVATRatex /100) = nVATAmtxx
+    //        ldblVATRate = ldblVATRate / 100;
+    //        ldblVATAmt = ldblBasicPrem.multiply(new BigDecimal(ldblVATRate));
+            ldblVATAmt = poController.getMasterModel().getVATAmt();
+            ldblVATRate  = (ldblVATAmt.divide(ldblBasicPrem, 10, RoundingMode.HALF_UP)).doubleValue() * 100;
+
+            //BASIC PREMIUM * (nLGUTaxRt /100) = nLGUTaxAm
+    //        ldblLGUTaxRt = ldblLGUTaxRt / 100;
+    //        ldblLGUTaxAm = ldblBasicPrem.multiply(new BigDecimal(ldblLGUTaxRt));
+            ldblLGUTaxAm = poController.getMasterModel().getLGUTaxAm();
+            ldblLGUTaxRt  = (ldblLGUTaxAm.divide(ldblBasicPrem, 10, RoundingMode.HALF_UP)).doubleValue() * 100;
+        }
         //Authentication fee
         ldblAuthFee = poController.getMasterModel().getAuthFee();
         //.add(ldblTaxAmt).add(ldblTaxAmt) // nTaxAmtxx
@@ -267,9 +278,9 @@ public class InsurancePolicy  implements GTransaction{
         ldblCommissn = poController.getMasterModel().getCommissn();
         ldblPayAmt = ldblGrossAmt.subtract(ldblCommissn);
         
-        poController.getMasterModel().setDocAmt(ldblDocAmt); 
-        poController.getMasterModel().setVATAmt(ldblVATAmt); 
-        poController.getMasterModel().setLGUTaxAm(ldblLGUTaxAm); 
+        poController.getMasterModel().setDocRate(ldblDocRate); 
+        poController.getMasterModel().setVATRate(ldblVATRate); 
+        poController.getMasterModel().setLGUTaxRt(ldblLGUTaxRt); 
         poController.getMasterModel().setGrossAmt(ldblGrossAmt); 
         poController.getMasterModel().setNetTotal(ldblNetTotl); 
         poController.getMasterModel().setPayAmt(ldblPayAmt); 
@@ -316,8 +327,14 @@ public class InsurancePolicy  implements GTransaction{
      */
     public JSONObject searchPolicyApplication(String fsValue){
         JSONObject loJSON = new JSONObject();
+        JSONObject loJSONChecker = new JSONObject();
         loJSON = poController.searchPolicyApplication(fsValue);
         if(!"error".equals((String) loJSON.get("result"))){
+            loJSONChecker = poController.checkExistingPolicy((String) loJSON.get("sTransNox"));
+            if("error".equals((String) loJSONChecker.get("result"))){
+                return loJSONChecker;
+            }
+            
             poController.getMasterModel().setReferNo((String) loJSON.get("sTransNox"));
             poController.getMasterModel().setPropslNo((String) loJSON.get("sReferNox"));
             poController.getMasterModel().setOwnrNm((String) loJSON.get("sOwnrNmxx"));

@@ -234,8 +234,15 @@ public class InsurancePolicyApplication  implements GTransaction{
      */
     public JSONObject searchProposal(String fsValue){
         JSONObject loJSON = new JSONObject();
+        JSONObject loJSONChecker = new JSONObject();
         loJSON = poController.searchProposal(fsValue);
+        
         if(!"error".equals((String) loJSON.get("result"))){
+            loJSONChecker = poController.checkExistingApplication((String) loJSON.get("sTransNox"));
+            if("error".equals((String)loJSONChecker.get("result"))){
+                return loJSONChecker;
+            }
+            
             poController.getMasterModel().setReferNo((String) loJSON.get("sTransNox"));
             poController.getMasterModel().setPropslNo((String) loJSON.get("sReferNox"));
             poController.getMasterModel().setOwnrNm((String) loJSON.get("sOwnrNmxx"));

@@ -273,6 +273,7 @@ public class InsurancePolicyProposal implements GTransaction{
         JSONObject loJSON = new JSONObject();
         loJSON = poController.searchVSP(fsValue,fbByCode, fsInsType);
         if(!"error".equals((String) loJSON.get("result"))){
+            
             poController.getMasterModel().setVSPTranNo((String) loJSON.get("sTransNox"));
 //            poController.getMasterModel().setVSPNo((String) loJSON.get("sVSPNOxxx"));
             poController.getMasterModel().setSerialID((String) loJSON.get("sSerialID"));
