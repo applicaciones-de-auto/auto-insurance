@@ -338,7 +338,7 @@ public class InsurancePolicy  implements GTransaction{
             poController.getMasterModel().setReferNo((String) loJSON.get("sTransNox"));
             poController.getMasterModel().setPropslNo((String) loJSON.get("sReferNox"));
             poController.getMasterModel().setOwnrNm((String) loJSON.get("sOwnrNmxx"));
-            poController.getMasterModel().setAddress((String) loJSON.get("sAddressx"));
+            poController.getMasterModel().setAddress(((String) loJSON.get("sAddressx")).trim());
             poController.getMasterModel().setCSNo((String) loJSON.get("sCSNoxxxx"));
             poController.getMasterModel().setPlateNo((String) loJSON.get("sPlateNox"));
             poController.getMasterModel().setEngineNo((String) loJSON.get("sEngineNo"));
@@ -349,7 +349,8 @@ public class InsurancePolicy  implements GTransaction{
             poController.getMasterModel().setBodyType((String) loJSON.get("sBodyType"));
             poController.getMasterModel().setUnitType((String) loJSON.get("sUnitType"));    
             poController.getMasterModel().setColorDsc((String) loJSON.get("sColorDsc")); 
-            
+              
+            poController.getMasterModel().setEmpName((String) loJSON.get("sEmpNamex")); 
             poController.getMasterModel().setInsurNme((String) loJSON.get("sInsurNme"));
             poController.getMasterModel().setBrInsNme((String) loJSON.get("sBrInsNme"));
             poController.getMasterModel().setInsTypID((String) loJSON.get("sInsTypID"));
@@ -395,6 +396,7 @@ public class InsurancePolicy  implements GTransaction{
             poController.getMasterModel().setUnitType("");
             poController.getMasterModel().setColorDsc(""); 
             
+            poController.getMasterModel().setEmpName(""); 
             poController.getMasterModel().setInsurNme("");
             poController.getMasterModel().setBrInsNme("");
             poController.getMasterModel().setInsTypID("");

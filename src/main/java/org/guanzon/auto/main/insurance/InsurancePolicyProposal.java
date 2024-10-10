@@ -280,7 +280,7 @@ public class InsurancePolicyProposal implements GTransaction{
             poController.getMasterModel().setClientID((String) loJSON.get("sClientID"));
             poController.getMasterModel().setOwnrNm((String) loJSON.get("sBuyCltNm"));
             poController.getMasterModel().setClientTp((String) loJSON.get("cClientTp"));
-            poController.getMasterModel().setAddress((String) loJSON.get("sAddressx"));
+            poController.getMasterModel().setAddress(((String) loJSON.get("sAddressx")).trim());
             poController.getMasterModel().setCSNo((String) loJSON.get("sCSNoxxxx"));
             poController.getMasterModel().setPlateNo((String) loJSON.get("sPlateNox"));
             poController.getMasterModel().setFrameNo((String) loJSON.get("sFrameNox"));
