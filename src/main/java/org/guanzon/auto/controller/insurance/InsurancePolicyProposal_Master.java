@@ -646,26 +646,36 @@ public class InsurancePolicyProposal_Master implements GTransaction{
     
     public JSONObject approveTransaction(int fnRow){
         JSONObject loJSON = new JSONObject();
-        paDetail.get(fnRow).setTranStat(TransactionStatus.STATE_CLOSED); //Set to ON PROCESS for VIP Clients
+        paDetail.get(fnRow).setTranStat(TransactionStatus.STATE_CLOSED); //Approve
         loJSON = paDetail.get(fnRow).saveRecord();
         if(!"error".equals((String) loJSON.get("result"))){
             TransactionStatusHistory loEntity = new TransactionStatusHistory(poGRider);
-            loJSON = loEntity.newTransaction();
+            //Update to cancel all previous approvements
+            loJSON = loEntity.cancelTransaction(paDetail.get(fnRow).getTransNo());
             if(!"error".equals((String) loJSON.get("result"))){
-                loEntity.getMasterModel().setApproved(poGRider.getUserID());
-                loEntity.getMasterModel().setApprovedDte(poGRider.getServerDate());
-                loEntity.getMasterModel().setSourceNo(paDetail.get(fnRow).getTransNo());
-                loEntity.getMasterModel().setTableNme(paDetail.get(fnRow).getTable());
-                loEntity.getMasterModel().setRefrStat(paDetail.get(fnRow).getTranStat());
-                
-                loJSON = loEntity.saveTransaction();
-                if("error".equals((String) loJSON.get("result"))){
-                    return loJSON;
+                loJSON = loEntity.newTransaction();
+                if(!"error".equals((String) loJSON.get("result"))){
+                    loEntity.getMasterModel().setApproved(poGRider.getUserID());
+                    loEntity.getMasterModel().setApprovedDte(poGRider.getServerDate());
+                    loEntity.getMasterModel().setSourceNo(paDetail.get(fnRow).getTransNo());
+                    loEntity.getMasterModel().setTableNme(paDetail.get(fnRow).getTable());
+                    loEntity.getMasterModel().setRefrStat(paDetail.get(fnRow).getTranStat());
+
+                    loJSON = loEntity.saveTransaction();
+                    if("error".equals((String) loJSON.get("result"))){
+                        return loJSON;
+                    }
                 }
-                
             }
         
         }
+        return loJSON;
+    }
+    
+    public JSONObject disapproveTransaction(int fnRow){
+        JSONObject loJSON = new JSONObject();
+        paDetail.get(fnRow).setTranStat(TransactionStatus.STATE_VOID); //Disapprove
+        loJSON = paDetail.get(fnRow).saveRecord();
         return loJSON;
     }
 }

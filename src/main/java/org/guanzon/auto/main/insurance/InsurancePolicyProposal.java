@@ -424,11 +424,20 @@ public class InsurancePolicyProposal implements GTransaction{
     }
     
     /**
-     * Transaction Approve
+     * Transaction Approval
      * @param fnRow selected row of transaction to be approved
      * @return 
      */
     public JSONObject approveProposal(int fnRow){
         return poController.approveTransaction(fnRow);
+    }
+    
+    /**
+     * Transaction Approve
+     * @param fnRow selected row of transaction to be approved
+     * @return 
+     */
+    public JSONObject disapproveProposal(int fnRow){
+        return poController.disapproveTransaction(fnRow);
     }
 }
