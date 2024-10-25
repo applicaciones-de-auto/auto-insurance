@@ -6,6 +6,7 @@
 package org.guanzon.auto.main.insurance;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import org.guanzon.appdriver.base.GRider;
 import org.guanzon.appdriver.base.SQLUtil;
 import org.guanzon.appdriver.constant.EditMode;
@@ -411,4 +412,43 @@ public class InsurancePolicyProposal implements GTransaction{
         return loJSON;
     }
     
+    public ArrayList getProposalList(){return poController.getDetailList();}
+    public InsurancePolicyProposal_Master getProposalModel(){return poController;} 
+    
+    /**
+     * Load for approval transaction
+     * @return 
+     */
+    public JSONObject loadProposalForApproval(){
+        return poController.loadForApproval();
+    }
+    
+    /**
+     * Transaction Approval
+     * @param fnRow selected row of transaction to be approved
+     * @return 
+     */
+    public JSONObject approveProposal(int fnRow){
+        JSONObject loJSON = new JSONObject();
+        if (!pbWtParent) poGRider.beginTrans();
+        
+        loJSON = poController.approveTransaction(fnRow);
+        if("error".equalsIgnoreCase((String) loJSON.get("result"))){
+            if (!pbWtParent) poGRider.rollbackTrans();
+            return checkData(loJSON);
+        }
+        
+        if (!pbWtParent) poGRider.commitTrans();
+        
+        return loJSON;
+    }
+    
+    /**
+     * Transaction Approve
+     * @param fnRow selected row of transaction to be approved
+     * @return 
+     */
+    public JSONObject disapproveProposal(int fnRow){
+        return poController.disapproveTransaction(fnRow);
+    }
 }

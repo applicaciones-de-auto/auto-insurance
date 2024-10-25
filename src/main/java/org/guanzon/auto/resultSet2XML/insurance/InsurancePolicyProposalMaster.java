@@ -71,8 +71,8 @@ public class InsurancePolicyProposalMaster {
                         + "  , a.cTranStat "                                                                   
                         + "  , a.sModified "                                                                   
                         + "  , a.dModified "                                                                   
-                        + "  , a.sApproved "                                                                   
-                        + "  , a.dApproved "  
+        //                + "  , a.sApproved "                                                                   
+        //                + "  , a.dApproved "  
                         + "  , CASE "          
                         + " 	WHEN a.cTranStat = "+SQLUtil.toSQL(TransactionStatus.STATE_CLOSED)+" THEN 'APPROVE' "                     
                         + " 	WHEN a.cTranStat = "+SQLUtil.toSQL(TransactionStatus.STATE_CANCELLED)+" THEN 'CANCELLED' "                  
@@ -82,11 +82,11 @@ public class InsurancePolicyProposalMaster {
                         + "    END AS sTranStat "
                         + "  , b.sCompnyNm AS sOwnrNmxx "                                                      
                         + "  , b.cClientTp "                                                                   
-                        + "  , IFNULL(CONCAT( IFNULL(CONCAT(d.sHouseNox,' ') , ''), "                          
+                        + "  , TRIM(IFNULL(CONCAT( IFNULL(CONCAT(d.sHouseNox,' ') , ''), "                          
                         + "    IFNULL(CONCAT(d.sAddressx,' ') , ''), "                                         
                         + "    IFNULL(CONCAT(e.sBrgyName,' '), ''),  "                                         
                         + "    IFNULL(CONCAT(f.sTownName, ', '),''), "                                         
-                        + "    IFNULL(CONCAT(g.sProvName),'') )	, '') AS sAddressx "                           
+                        + "    IFNULL(CONCAT(g.sProvName),'') )	, '')) AS sAddressx "                           
                         + "  , k.sCompnyNm AS sCoOwnrNm "                                                      
                         + "  , h.sCSNoxxxx "                                                                   
                         + "  , h.sFrameNox "                                                                   
@@ -106,7 +106,9 @@ public class InsurancePolicyProposalMaster {
                         + "  , jb.sUnitType "
                         + "  , jb.sBodyType "
                         + "  , jd.sColorDsc "    
-                        + "  , p.sTransNox AS sInsAppNo "                                                          
+                        + "  , p.sTransNox AS sInsAppNo "                                                                                   
+                        + " , DATE(q.dApproved) AS dApprovex "                                                                           
+                        + " , r.sCompnyNm AS sApprover "                                                         
                         + " FROM insurance_policy_proposal a "                                                 
                         + " LEFT JOIN client_master b ON b.sClientID = a.sClientID "  /*owner*/                
                         + " LEFT JOIN client_address c ON c.sClientID = a.sClientID AND c.cPrimaryx = '1' "    
@@ -127,6 +129,8 @@ public class InsurancePolicyProposalMaster {
                         + " LEFT JOIN vsp_master n ON n.sTransNox = a.sVSPNoxxx "             
                         + " LEFT JOIN vsp_finance o ON o.sTransNox = a.sVSPNoxxx "            
                         + " LEFT JOIN insurance_policy_application p ON p.sReferNox = a.sTransNox AND p.cTranStat <> " + SQLUtil.toSQL(TransactionStatus.STATE_CANCELLED)
+                        + " LEFT JOIN transaction_status_history q ON q.sSourceNo = a.sTransNox AND q.cTranStat <> "+ SQLUtil.toSQL(TransactionStatus.STATE_CANCELLED)
+                        + " LEFT JOIN ggc_isysdbf.client_master r ON r.sClientID = q.sApproved "
                         + " WHERE 0=1";
         
         

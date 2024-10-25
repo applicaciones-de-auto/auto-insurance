@@ -113,6 +113,8 @@ public class InsurancePolicyApplication_Master implements GTransaction{
             loConn = setConnection();
 
             poModel.setTransNo(MiscUtil.getNextCode(poModel.getTable(), "sTransNox", true, poGRider.getConnection(), poGRider.getBranchCode()));
+            poModel.setEmpName(System.getProperty("user.name"));
+            poModel.setEmployID(poGRider.getUserID());
             poModel.newRecord();
             
             if (poModel == null){

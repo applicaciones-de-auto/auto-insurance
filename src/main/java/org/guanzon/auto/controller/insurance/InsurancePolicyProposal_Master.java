@@ -12,6 +12,7 @@ import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.guanzon.appdriver.agent.ShowDialogFX;
@@ -24,6 +25,7 @@ import org.guanzon.appdriver.constant.TransactionStatus;
 import org.guanzon.appdriver.iface.GTransaction;
 import org.guanzon.auto.general.CancelForm;
 import org.guanzon.auto.general.SearchDialog;
+import org.guanzon.auto.general.TransactionStatusHistory;
 import org.guanzon.auto.model.clients.Model_Client_Master;
 import org.guanzon.auto.model.clients.Model_Vehicle_Serial_Master;
 import org.guanzon.auto.model.insurance.Model_Insurance_Policy_Proposal;
@@ -48,6 +50,7 @@ public class InsurancePolicyProposal_Master implements GTransaction{
     public JSONObject poJSON;
     
     Model_Insurance_Policy_Proposal poModel;
+    ArrayList<Model_Insurance_Policy_Proposal> paDetail;
     
     public InsurancePolicyProposal_Master(GRider foGRider, boolean fbWthParent, String fsBranchCd) {
         poGRider = foGRider;
@@ -576,6 +579,103 @@ public class InsurancePolicyProposal_Master implements GTransaction{
             loJSON.put("message", "No record loaded.");
             return loJSON;
         }
+        return loJSON;
+    }
+    
+    public ArrayList<Model_Insurance_Policy_Proposal> getDetailList(){
+        if(paDetail == null){
+           paDetail = new ArrayList<>();
+        }
+        return paDetail;
+    }
+    public void setDetailList(ArrayList<Model_Insurance_Policy_Proposal> foObj){this.paDetail = foObj;}
+    
+    public void setDetail(int fnRow, int fnIndex, Object foValue){ paDetail.get(fnRow).setValue(fnIndex, foValue);}
+    public void setDetail(int fnRow, String fsIndex, Object foValue){ paDetail.get(fnRow).setValue(fsIndex, foValue);}
+    public Object getDetail(int fnRow, int fnIndex){return paDetail.get(fnRow).getValue(fnIndex);}
+    public Object getDetail(int fnRow, String fsIndex){return paDetail.get(fnRow).getValue(fsIndex);}
+    
+    public Model_Insurance_Policy_Proposal getDetailModel(int fnRow) {
+        return paDetail.get(fnRow);
+    }
+    
+    public JSONObject loadForApproval(){
+        /*
+        -cTranStat	0	For Follow-up
+        -cTranStat	1	On Process
+        -cTranStat	2	Lost Sale
+        -cTranStat	3	VSP
+        -cTranStat	4	Sold
+        -cTranStat	5	Cancelled
+        */
+        paDetail = new ArrayList<>();
+        poJSON = new JSONObject();
+        Model_Insurance_Policy_Proposal loEntity = new Model_Insurance_Policy_Proposal(poGRider);
+        String lsSQL = MiscUtil.addCondition(loEntity.getSQL(), " a.cTranStat = "  + SQLUtil.toSQL(TransactionStatus.STATE_OPEN)
+                                                                 + " ORDER BY a.sTransNox ASC ");
+        ResultSet loRS = poGRider.executeQuery(lsSQL);
+        
+        System.out.println(lsSQL);
+       try {
+            int lnctr = 0;
+            if (MiscUtil.RecordCount(loRS) > 0) {
+                while(loRS.next()){
+                        paDetail.add(new Model_Insurance_Policy_Proposal(poGRider));
+                        paDetail.get(paDetail.size() - 1).openRecord(loRS.getString("sTransNox"));
+                        
+                        pnEditMode = EditMode.UPDATE;
+                        lnctr++;
+                        poJSON.put("result", "success");
+                        poJSON.put("message", "Record loaded successfully.");
+                    } 
+                
+            }else{
+//                paDetail = new ArrayList<>();
+//                addDetail(fsValue);
+                poJSON.put("result", "error");
+                poJSON.put("continue", true);
+                poJSON.put("message", "No record selected.");
+            }
+            MiscUtil.close(loRS);
+        } catch (SQLException e) {
+            poJSON.put("result", "error");
+            poJSON.put("message", e.getMessage());
+        }
+        return poJSON;
+    }
+    
+    public JSONObject approveTransaction(int fnRow){
+        JSONObject loJSON = new JSONObject();
+        paDetail.get(fnRow).setTranStat(TransactionStatus.STATE_CLOSED); //Approve
+        loJSON = paDetail.get(fnRow).saveRecord();
+        if(!"error".equals((String) loJSON.get("result"))){
+            TransactionStatusHistory loEntity = new TransactionStatusHistory(poGRider);
+            //Update to cancel all previous approvements
+            loJSON = loEntity.cancelTransaction(paDetail.get(fnRow).getTransNo());
+            if(!"error".equals((String) loJSON.get("result"))){
+                loJSON = loEntity.newTransaction();
+                if(!"error".equals((String) loJSON.get("result"))){
+                    loEntity.getMasterModel().setApproved(poGRider.getUserID());
+                    loEntity.getMasterModel().setApprovedDte(poGRider.getServerDate());
+                    loEntity.getMasterModel().setSourceNo(paDetail.get(fnRow).getTransNo());
+                    loEntity.getMasterModel().setTableNme(paDetail.get(fnRow).getTable());
+                    loEntity.getMasterModel().setRefrStat(paDetail.get(fnRow).getTranStat());
+
+                    loJSON = loEntity.saveTransaction();
+                    if("error".equals((String) loJSON.get("result"))){
+                        return loJSON;
+                    }
+                }
+            }
+        
+        }
+        return loJSON;
+    }
+    
+    public JSONObject disapproveTransaction(int fnRow){
+        JSONObject loJSON = new JSONObject();
+        paDetail.get(fnRow).setTranStat(TransactionStatus.STATE_VOID); //Disapprove
+        loJSON = paDetail.get(fnRow).saveRecord();
         return loJSON;
     }
 }
