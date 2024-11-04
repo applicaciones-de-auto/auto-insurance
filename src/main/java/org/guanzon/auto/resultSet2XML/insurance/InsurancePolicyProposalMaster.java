@@ -129,7 +129,7 @@ public class InsurancePolicyProposalMaster {
                         + " LEFT JOIN vsp_master n ON n.sTransNox = a.sVSPNoxxx "             
                         + " LEFT JOIN vsp_finance o ON o.sTransNox = a.sVSPNoxxx "            
                         + " LEFT JOIN insurance_policy_application p ON p.sReferNox = a.sTransNox AND p.cTranStat <> " + SQLUtil.toSQL(TransactionStatus.STATE_CANCELLED)
-                        + " LEFT JOIN transaction_status_history q ON q.sSourceNo = a.sTransNox AND q.cTranStat <> "+ SQLUtil.toSQL(TransactionStatus.STATE_CANCELLED)
+                        + " LEFT JOIN transaction_status_history q ON q.sSourceNo = a.sTransNox  AND q.cRefrStat = "+ SQLUtil.toSQL(TransactionStatus.STATE_CLOSED) + " AND q.cTranStat <> "+ SQLUtil.toSQL(TransactionStatus.STATE_CANCELLED)
                         + " LEFT JOIN ggc_isysdbf.client_master r ON r.sClientID = q.sApproved "
                         + " WHERE 0=1";
         

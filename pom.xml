@@ -62,5 +62,10 @@
             <artifactId>auto-parameter</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>auto-cashiering</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 </project>
