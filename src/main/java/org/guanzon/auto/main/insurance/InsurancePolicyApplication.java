@@ -10,6 +10,7 @@ import org.guanzon.appdriver.base.GRider;
 import org.guanzon.appdriver.constant.EditMode;
 import org.guanzon.appdriver.iface.GTransaction;
 import org.guanzon.auto.controller.insurance.InsurancePolicyApplication_Master;
+import org.guanzon.auto.main.cashiering.CashierReceivables;
 import org.json.simple.JSONObject;
 
 /**
@@ -123,6 +124,14 @@ public class InsurancePolicyApplication  implements GTransaction{
             return checkData(poJSON);
         }
         if (!pbWtParent) poGRider.commitTrans();
+        
+        //Save Cashier Receivables
+//        if(poController.getMasterModel().getTranStat().equals(TransactionStatus.STATE_CLOSED)){
+        CashierReceivables loCAR = new CashierReceivables(poGRider, pbWtParent, psBranchCd);
+        JSONObject loJSONCAR = loCAR.generateCAR("POLICY", poController.getMasterModel().getTransNo());
+        if("error".equals((String) loJSONCAR.get("result"))){
+            return loJSONCAR;
+        }
         
         return poJSON;
     }
