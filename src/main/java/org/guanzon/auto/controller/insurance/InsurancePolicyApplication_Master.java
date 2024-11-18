@@ -265,7 +265,7 @@ public class InsurancePolicyApplication_Master implements GTransaction{
     
     public JSONObject searchTransaction(String fsValue, boolean fbByCode) {
         String lsHeader = "Application Date»Application No»Customer»CS No»Plate No»Status";
-        String lsColName = "dTransact»sReferNox»sOwnrNmxx»sCSNoxxxx»sPlateNox»sTranStat";
+        String lsColName = "dTransact»sTransNox»sOwnrNmxx»sCSNoxxxx»sPlateNox»sTranStat";
         String lsSQL = poModel.getSQL();
         System.out.println(lsSQL);
         JSONObject loJSON = SearchDialog.jsonSearch(
