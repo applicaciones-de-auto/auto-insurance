@@ -651,7 +651,7 @@ public class InsurancePolicyProposal_Master implements GTransaction{
         loJSON = paDetail.get(fnRow).saveRecord();
         if(!"error".equals((String) loJSON.get("result"))){
             TransactionStatusHistory loEntity = new TransactionStatusHistory(poGRider);
-            loJSON = loEntity.updateStatusHistory(paDetail.get(fnRow).getTransNo(), poModel.getTable(), "", TransactionStatus.STATE_CLOSED);
+            loJSON = loEntity.updateStatusHistory(paDetail.get(fnRow).getTransNo(), poModel.getTable(), "POLICY PROPOSAL", TransactionStatus.STATE_CLOSED, "APPROVED");
             if("error".equals((String) loJSON.get("result"))){
                 return loJSON;
             }
@@ -683,6 +683,13 @@ public class InsurancePolicyProposal_Master implements GTransaction{
         JSONObject loJSON = new JSONObject();
         paDetail.get(fnRow).setTranStat(TransactionStatus.STATE_VOID); //Disapprove
         loJSON = paDetail.get(fnRow).saveRecord();
+        if(!"error".equals((String) loJSON.get("result"))){
+            TransactionStatusHistory loEntity = new TransactionStatusHistory(poGRider);
+            loJSON = loEntity.updateStatusHistory(paDetail.get(fnRow).getTransNo(), poModel.getTable(), "POLICY PROPOSAL", TransactionStatus.STATE_VOID, "DISAPPROVE");
+            if("error".equals((String) loJSON.get("result"))){
+                return loJSON;
+            }
+        }
         return loJSON;
     }
 }
