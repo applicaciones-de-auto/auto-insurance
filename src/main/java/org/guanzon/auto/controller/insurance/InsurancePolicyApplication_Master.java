@@ -243,7 +243,8 @@ public class InsurancePolicyApplication_Master implements GTransaction{
                 }
                 
                 CancelForm cancelform = new CancelForm();
-                if (!cancelform.loadCancelWindow(poGRider, poModel.getTransNo(), poModel.getReferNo(), "POLICY PROPOSAL")) {
+//                if (!cancelform.loadCancelWindow(poGRider, poModel.getTransNo(), poModel.getReferNo(), "POLICY PROPOSAL")) {
+                if (!cancelform.loadCancelWindow(poGRider, poModel.getTransNo(), poModel.getTable())) {
                     poJSON.put("result", "error");
                     poJSON.put("message", "Cancellation failed.");
                     return poJSON;
@@ -264,7 +265,7 @@ public class InsurancePolicyApplication_Master implements GTransaction{
     
     public JSONObject searchTransaction(String fsValue, boolean fbByCode) {
         String lsHeader = "Application Date»Application No»Customer»CS No»Plate No»Status";
-        String lsColName = "dTransact»sReferNox»sOwnrNmxx»sCSNoxxxx»sPlateNox»sTranStat";
+        String lsColName = "dTransact»sTransNox»sOwnrNmxx»sCSNoxxxx»sPlateNox»sTranStat";
         String lsSQL = poModel.getSQL();
         System.out.println(lsSQL);
         JSONObject loJSON = SearchDialog.jsonSearch(
