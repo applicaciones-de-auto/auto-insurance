@@ -345,7 +345,7 @@ public class InsurancePolicyApplication_Master implements GTransaction{
                 "Employee ID»Name»Department»Branch",
                 "sEmployID»sCompnyNm»sDeptName»sBranchNm",
                 "a.sEmployID»b.sCompnyNm»c.sDeptName»e.sBranchNm",
-                0);
+                1);
         
         if (poJSON != null) {
         } else {
@@ -382,7 +382,7 @@ public class InsurancePolicyApplication_Master implements GTransaction{
                 lsHeader,
                 lsColName,
                 lsCriteria,
-                1);
+                0);
         
         if (loJSON != null) {
         } else {
